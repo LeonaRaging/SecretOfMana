@@ -1,12 +1,13 @@
 #pragma once
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include "default.hpp"
 #include "Entity.hpp"
 
 class RenderWindow 
 {
 public:
-	RenderWindow(const char* p_title, int p_w, int p_h);
+	RenderWindow(const char* p_title);
 	void init();
 	void render(Entity &e);
 	void display();

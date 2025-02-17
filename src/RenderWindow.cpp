@@ -3,16 +3,16 @@
 
 using namespace std;
 
-RenderWindow::RenderWindow(const char* p_title, int p_w, int p_h)
+RenderWindow::RenderWindow(const char* p_title)
 	:window(NULL), renderer(NULL)
 {
-	window = SDL_CreateWindow(p_title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, p_w, p_h, SDL_WINDOW_SHOWN);
+	window = SDL_CreateWindow(p_title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 	
 	if (window == NULL) {
 		cout << "window could not be created!, Error: " << SDL_GetError() << endl;
 	}	
 
-	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 }
 
 void RenderWindow::init() 
@@ -28,11 +28,7 @@ void RenderWindow::display()
 
 void RenderWindow::render(Entity &e)
 {
-	SDL_Rect rect;
-	rect.x = e.getX();
-	rect.y = e.getY();
-	rect.w = e.getW();
-	rect.h = e.getH();
+	SDL_Rect rect = e.getCurrentFrame();
 
 	SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
 	SDL_RenderDrawRect(renderer, &rect);

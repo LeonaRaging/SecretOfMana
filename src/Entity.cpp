@@ -1,32 +1,20 @@
 #include "Entity.hpp"
 
-Entity::Entity(int p_x, int p_y, int p_w, int p_h)
-	:x(p_x), y(p_y), w(p_w), h(p_h)
+Entity::Entity(vector2f p_pos):
+	pos(p_pos)
 {
-
+	currentFrame.x = 0;
+	currentFrame.y = 0;
+	currentFrame.w = 32;
+	currentFrame.h = 32;
 }
 
-int Entity::getX() 
+vector2f& Entity::getPos()
 {
-	return x;
+	return pos;
 }
 
-int Entity::getY() 
+SDL_Rect Entity::getCurrentFrame()
 {
-	return y;
-}
-
-int Entity::getW() 
-{
-	return w;
-}
-
-int Entity::getH() 
-{
-	return h;
-}
-
-void Entity::move(int p_x, int p_y)
-{
-	x += p_x; y += p_y;
+	return currentFrame;
 }

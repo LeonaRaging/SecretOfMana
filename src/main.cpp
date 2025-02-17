@@ -2,8 +2,8 @@
 #include <SDL2/SDL_image.h>
 #include <iostream>
 #include <vector>
+
 #include "RenderWindow.hpp"
-#include "Player.hpp"
 #include "Entity.hpp"
 
 using namespace std;
@@ -16,15 +16,12 @@ int main(int argc, char* args[])
 	if (!(IMG_Init(IMG_INIT_PNG)))
 		cout << "IMG_Init has failed, Error: " << SDL_GetError() << endl;
 
-	RenderWindow window("GAME", 1280, 720);
+	RenderWindow window("GAME");
 
 	bool gameRunning = true;
 
 	SDL_Event event;
-	vector<Entity> entities;
-	Player p;
-			entities.push_back(p.getEntity());
-
+	vector<Entity> entities = {Entity(vector2f())};
 	
 	while (gameRunning) 
 	{
@@ -35,17 +32,15 @@ int main(int argc, char* args[])
 
 			window.init();
 
-			// entities.clear();
-			cout << p.getEntity().getX() << endl;
 			
-
+			
 			for (Entity &e : entities)
 				window.render(e);
 
-			// p.move();
 
 			window.display();
 		}
+		SDL_Delay(100);
 	}
 
 	window.cleanUp();

@@ -1,14 +1,15 @@
 #pragma once
+#include <SDL2/SDL.h>
+
+#include "math.hpp"
 
 class Entity
 {
 public:
-	Entity(int p_x, int p_y, int p_w, int p_h);
-	int getX();
-	int getY();
-	int getW();
-	int getH();
-	void move(int x, int y);
+	Entity(vector2f p_pos);
+	vector2f& getPos();
+	SDL_Rect getCurrentFrame();
 private:
-	int x, y, w, h;
+	vector2f pos;
+	SDL_Rect currentFrame;
 };

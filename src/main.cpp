@@ -2,9 +2,11 @@
 #include <SDL2/SDL_image.h>
 #include <iostream>
 #include <vector>
+#include <math.h>
 
 #include "RenderWindow.hpp"
 #include "Entity.hpp"
+#include "default.hpp"
 
 using namespace std;
 
@@ -21,26 +23,34 @@ int main(int argc, char* args[])
 	bool gameRunning = true;
 
 	SDL_Event event;
-	vector<Entity> entities = {Entity(vector2f())};
+	SDL_Texture* playerTexture = window.loadTexture("res/image/player.png");
+
+	vector<Entity> entities = {Entity(vector2f(100, 100), playerTexture)};
 	
 	while (gameRunning) 
 	{
+		Uint32 Start = SDL_GetPerformanceCounter();
+
 		while (SDL_PollEvent(&event))
 		{
 			if (event.type == SDL_QUIT)
 				gameRunning = false;
-
-			window.init();
-
-			
-			
-			for (Entity &e : entities)
-				window.render(e);
-
-
-			window.display();
 		}
-		SDL_Delay(100);
+
+		window.init();
+
+		entities[0].update();
+		
+		for (Entity &e : entities)
+			window.render(e);
+
+		window.display();
+
+		Uint32 End = SDL_GetPerformanceCounter();
+
+		float elapsedMS = (End - Start) / (float)SDL_GetPerformanceFrequency() * 1000.0f;
+
+		SDL_Delay(floor(16.666f - elapsedMS));
 	}
 
 	window.cleanUp();

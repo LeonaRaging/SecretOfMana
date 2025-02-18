@@ -36,7 +36,7 @@ void RenderWindow::display()
 	SDL_RenderPresent(renderer);
 }
 
-void RenderWindow::render(Entity &p_entity)
+void RenderWindow::render(entity &p_entity)
 {
 	SDL_Rect src;
 	src.x = p_entity.getCurrentFrame().x;
@@ -45,8 +45,8 @@ void RenderWindow::render(Entity &p_entity)
 	src.h = p_entity.getCurrentFrame().h;
 
 	SDL_Rect dst;
-	dst.x = p_entity.getPos().x * 4;
-	dst.y = p_entity.getPos().y * 4;
+	dst.x = p_entity.getPos().x;
+	dst.y = p_entity.getPos().y;
 	dst.w = p_entity.getCurrentFrame().w;
 	dst.h = p_entity.getCurrentFrame().h;
 

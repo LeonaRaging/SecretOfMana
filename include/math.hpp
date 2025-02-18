@@ -1,3 +1,8 @@
+#pragma once
+#include <SDL2/SDL.h>
+#include <vector>
+#include <iostream>
+
 struct vector2f 
 {
 	vector2f(float p_x, float p_y):

@@ -5,8 +5,10 @@
 #include <math.h>
 
 #include "RenderWindow.hpp"
-#include "Entity.hpp"
+#include "entity.hpp"
 #include "default.hpp"
+#include "player.hpp"
+#include "enemy.hpp"
 
 using namespace std;
 
@@ -24,9 +26,15 @@ int main(int argc, char* args[])
 
 	SDL_Event event;
 	SDL_Texture* playerTexture = window.loadTexture("res/image/player.png");
+	SDL_Texture* enemyTexture = window.loadTexture("res/image/enemy.png");
 
-	vector<Entity> entities = {Entity(vector2f(100, 100), playerTexture)};
-	
+	player p(vector2f(), playerTexture); 
+	// enemy e(vector2f(100, 100), enemyTexture);
+
+	vector<entity> entities;
+	vector<entity> wall;
+	wall.push_back(entity(vector2f(100, 100), enemyTexture));
+
 	while (gameRunning) 
 	{
 		Uint32 Start = SDL_GetPerformanceCounter();
@@ -39,9 +47,14 @@ int main(int argc, char* args[])
 
 		window.init();
 
-		entities[0].update();
-		
-		for (Entity &e : entities)
+		entities.clear();
+
+		p.update(wall);
+		entities.push_back(p);
+
+		for (entity &e : entities)
+			window.render(e);
+		for (entity &e: wall)
 			window.render(e);
 
 		window.display();
@@ -51,6 +64,7 @@ int main(int argc, char* args[])
 		float elapsedMS = (End - Start) / (float)SDL_GetPerformanceFrequency() * 1000.0f;
 
 		SDL_Delay(floor(16.666f - elapsedMS));
+		cout << elapsedMS << endl;
 	}
 
 	window.cleanUp();

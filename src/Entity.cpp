@@ -1,7 +1,7 @@
-#include "Entity.hpp"
+#include "entity.hpp"
 #include "default.hpp"
 
-Entity::Entity(vector2f p_pos, SDL_Texture* p_tex):
+entity::entity(vector2f p_pos, SDL_Texture* p_tex):
 	pos(p_pos), tex(p_tex)
 {
 	currentFrame.x = 0;
@@ -10,39 +10,39 @@ Entity::Entity(vector2f p_pos, SDL_Texture* p_tex):
 	currentFrame.h = 32;
 }
 
-vector2f& Entity::getPos()
+vector2f& entity::getPos()
 {
 	return pos;
 }
 
-SDL_Rect Entity::getCurrentFrame()
+SDL_Rect entity::getCurrentFrame()
 {
 	return currentFrame;
 }
 
-SDL_Texture* Entity::getTex()
+SDL_Rect entity::getRect()
+{
+	SDL_Rect res;
+	res.x = pos.x;
+	res.y = pos.y;
+	res.w = currentFrame.w;
+	res.h = currentFrame.h;
+	return res;
+}
+
+SDL_Texture* entity::getTex()
 {
 	return tex;
 }
 
-void Entity::update()
+void entity::moveX(int p_speed)
 {
-	const Uint8* keys = SDL_GetKeyboardState(NULL);
+	if (pos.y + p_speed >= 0 && pos.y + p_speed < SCREEN_WIDTH)
+		pos.y += p_speed;
+}
 
-	if (keys[SDL_SCANCODE_W] && pos.y > 0)
-	{
-		pos.y--;
-	}
-
-	if (keys[SDL_SCANCODE_S] && pos.y < SCREEN_WIDTH - 1) {
-		pos.y++;
-	}
-
-	if (keys[SDL_SCANCODE_A] && pos.x > 0) {
-		pos.x--;
-	}
-
-	if (keys[SDL_SCANCODE_D] && pos.x < SCREEN_HEIGHT - 1) {
-		pos.x++;
-	}
+void entity::moveY(int p_speed) 
+{
+	if (pos.x + p_speed >= 0 && pos.x + p_speed < SCREEN_HEIGHT)
+		pos.x += p_speed;
 }

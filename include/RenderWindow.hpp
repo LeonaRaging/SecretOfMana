@@ -10,7 +10,7 @@ public:
 	RenderWindow(const char* p_title);
 	void init();
 	SDL_Texture* loadTexture(const char* p_filePath);
-	void render(entity &e);
+	void render(entity &e, SDL_Rect &camera);
 	void display(vector2f p_pos);
 	void cleanUp();
 private:

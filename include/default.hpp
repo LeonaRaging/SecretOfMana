@@ -1,6 +1,6 @@
 #pragma once
 
-#include "entity.hpp"
+#include "player.hpp"
 
 using namespace std;
 
@@ -12,3 +12,5 @@ const int TARGET_FPS = 100;
 const int FRAME_DELAY = 1000 / TARGET_FPS;
 
 bool isCollision(SDL_Rect a, vector<entity>& b);
+
+void update(SDL_Rect &camera, player &p);

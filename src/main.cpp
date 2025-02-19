@@ -29,6 +29,7 @@ int main(int argc, char* args[])
 	SDL_Texture* playerTexture = window.loadTexture("res/image/player.png");
 
 	player p(vector2f(300, 500), playerTexture, 19, 32, 16, 32); 
+	SDL_Rect camera;
 
 	vector<entity> entities;
 	
@@ -49,14 +50,16 @@ int main(int argc, char* args[])
 		entities.clear();
 
 		p.update(p_map.tiles);
+		update(camera, p);
+
 		entities.push_back(p);
 
-		window.render(p_map.e);
+		window.render(p_map.e, camera);
 
 		for (entity &e: p_map.tiles)
-			window.render(e);
+			window.render(e, camera);
 		for (entity &e : entities)
-			window.render(e);
+			window.render(e, camera);
 
 		window.display(p.getPos());
 

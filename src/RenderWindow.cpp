@@ -19,6 +19,7 @@ void RenderWindow::init()
 {
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 	SDL_RenderClear(renderer);
+	SDL_RenderSetLogicalSize(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
 }
 
 SDL_Texture* RenderWindow::loadTexture(const char* p_filePath)
@@ -33,17 +34,10 @@ SDL_Texture* RenderWindow::loadTexture(const char* p_filePath)
 
 void RenderWindow::display(vector2f p_pos)
 {
-	// SDL_Rect viewport;
-	// viewport.x = p_pos.x - SCREEN_HEIGHT / 2;
-	// viewport.y = p_pos.y - SCREEN_WIDTH / 2;
-	// viewport.w = SCREEN_WIDTH;
-	// viewport.h = SCREEN_HEIGHT;
-
-	// SDL_RenderSetClipRect(renderer, &viewport);
 	SDL_RenderPresent(renderer);
 }
 
-void RenderWindow::render(entity &p_entity)
+void RenderWindow::render(entity &p_entity, SDL_Rect &camera)
 {
 	SDL_Rect src;
 	src.x = p_entity.getCurrentFrame().x;
@@ -52,8 +46,8 @@ void RenderWindow::render(entity &p_entity)
 	src.h = p_entity.getCurrentFrame().h;
 
 	SDL_Rect dst;
-	dst.x = p_entity.getPos().x;
-	dst.y = p_entity.getPos().y;
+	dst.x = p_entity.getPos().x - camera.x;
+	dst.y = p_entity.getPos().y - camera.y;
 	dst.w = p_entity.getCurrentFrame().w;
 	dst.h = p_entity.getCurrentFrame().h;
 

@@ -6,7 +6,7 @@ using namespace std;
 RenderWindow::RenderWindow(const char* p_title)
 	:window(NULL), renderer(NULL)
 {
-	window = SDL_CreateWindow(p_title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+	window = SDL_CreateWindow(p_title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, LEVEL_WIDTH, LEVEL_HEIGHT, SDL_WINDOW_SHOWN);
 	
 	if (window == NULL) {
 		cout << "window could not be created!, Error: " << SDL_GetError() << endl;
@@ -31,8 +31,15 @@ SDL_Texture* RenderWindow::loadTexture(const char* p_filePath)
 	return texture;
 }
 
-void RenderWindow::display()
+void RenderWindow::display(vector2f p_pos)
 {
+	// SDL_Rect viewport;
+	// viewport.x = p_pos.x - SCREEN_HEIGHT / 2;
+	// viewport.y = p_pos.y - SCREEN_WIDTH / 2;
+	// viewport.w = SCREEN_WIDTH;
+	// viewport.h = SCREEN_HEIGHT;
+
+	// SDL_RenderSetClipRect(renderer, &viewport);
 	SDL_RenderPresent(renderer);
 }
 

@@ -9,6 +9,7 @@
 #include "default.hpp"
 #include "player.hpp"
 #include "enemy.hpp"
+#include "map.hpp"
 
 using namespace std;
 
@@ -26,14 +27,12 @@ int main(int argc, char* args[])
 
 	SDL_Event event;
 	SDL_Texture* playerTexture = window.loadTexture("res/image/player.png");
-	SDL_Texture* enemyTexture = window.loadTexture("res/image/enemy.png");
 
-	player p(vector2f(), playerTexture); 
-	// enemy e(vector2f(100, 100), enemyTexture);
+	player p(vector2f(300, 500), playerTexture, 19, 32, 16, 32); 
 
 	vector<entity> entities;
-	vector<entity> wall;
-	wall.push_back(entity(vector2f(100, 100), enemyTexture));
+	
+	map p_map = dragon_cave_2(window);
 
 	while (gameRunning) 
 	{
@@ -49,15 +48,17 @@ int main(int argc, char* args[])
 
 		entities.clear();
 
-		p.update(wall);
+		p.update(p_map.tiles);
 		entities.push_back(p);
 
+		window.render(p_map.e);
+
+		for (entity &e: p_map.tiles)
+			window.render(e);
 		for (entity &e : entities)
 			window.render(e);
-		for (entity &e: wall)
-			window.render(e);
 
-		window.display();
+		window.display(p.getPos());
 
 		Uint32 End = SDL_GetPerformanceCounter();
 

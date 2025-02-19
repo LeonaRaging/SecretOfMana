@@ -7,7 +7,7 @@ using namespace std;
 class entity
 {
 public:
-	entity(vector2f p_pos, SDL_Texture* p_tex);
+	entity(vector2f p_pos, SDL_Texture* p_tex, int p_x = 0, int p_y = 0, int p_h = 32, int p_w = 32);
 	vector2f& getPos();
 	SDL_Rect getCurrentFrame();
 	SDL_Rect getRect();

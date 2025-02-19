@@ -11,7 +11,7 @@ public:
 	void init();
 	SDL_Texture* loadTexture(const char* p_filePath);
 	void render(entity &e);
-	void display();
+	void display(vector2f p_pos);
 	void cleanUp();
 private:
 	SDL_Window* window;

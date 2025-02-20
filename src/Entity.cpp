@@ -1,9 +1,12 @@
 #include "entity.hpp"
 #include "default.hpp"
 
+
 entity::entity(vector2f p_pos, SDL_Texture* p_tex, int p_x, int p_y, int p_w, int p_h):
 	pos(p_pos), tex(p_tex)
 {
+	flip = SDL_FLIP_NONE;
+
 	currentFrame.x = p_x;
 	currentFrame.y = p_y;
 	currentFrame.w = p_w;
@@ -33,6 +36,16 @@ SDL_Rect entity::getRect()
 SDL_Texture* entity::getTex()
 {
 	return tex;
+}
+
+SDL_RendererFlip entity::getFlip()
+{
+	return flip;
+}
+
+void entity::setFlip(SDL_RendererFlip p_flip)
+{
+	flip = p_flip;
 }
 
 void entity::moveX(int p_speed)

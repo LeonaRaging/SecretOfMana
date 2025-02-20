@@ -12,11 +12,15 @@ public:
 	SDL_Rect getCurrentFrame();
 	SDL_Rect getRect();
 	SDL_Texture* getTex();
+	SDL_RendererFlip getFlip();
+
+	void setFlip(SDL_RendererFlip p_flip);
 	void moveX(int p_speed);
 	void moveY(int p_speed);
 protected:
 	vector2f pos;
 
+	SDL_RendererFlip flip;
 	SDL_Rect currentFrame;
 	SDL_Texture* tex;
 };

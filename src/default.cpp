@@ -15,6 +15,9 @@ bool isCollision(SDL_Rect a, vector<entity>& b)
 
 void update(SDL_Rect &camera, player &p)
 {
+	camera.x = camera.y = 0;
+	camera.w = LEVEL_WIDTH, camera.h = SCREEN_HEIGHT;
+
 	camera.x = p.getPos().x - SCREEN_HEIGHT / 2;
 	camera.y = p.getPos().y - SCREEN_WIDTH / 2;
 	camera.w = SCREEN_WIDTH;

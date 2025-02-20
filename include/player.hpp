@@ -5,9 +5,11 @@
 class player: public entity
 {
 public:
-	player(vector2f p_pos, SDL_Texture* p_tex, int p_x, int p_y, int p_w, int p_h);
+	player(vector2f p_pos, SDL_Texture* p_tex);
 	SDL_Rect getLegRect();
-	void update(vector<entity> &wall);
+	void update(vector<entity> &wall, float currentTime);
 private:
-	int speed;
+	int direction, speed, order;
+	float lastUpdate;
+	vector<SDL_Rect> sprites[4], stance;
 };

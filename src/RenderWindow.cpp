@@ -24,11 +24,17 @@ void RenderWindow::init()
 
 SDL_Texture* RenderWindow::loadTexture(const char* p_filePath)
 {
-	SDL_Texture* texture = NULL;
-	texture = IMG_LoadTexture(renderer, p_filePath);
+	SDL_Surface* loadedSurface = IMG_Load(p_filePath);
 
-	if (texture == NULL)
-		cout << "texture could not be loaded!, Error" << SDL_GetError() << endl;
+	if (loadedSurface == NULL)
+		cout << "image could not be loaded!, Error" << SDL_GetError() << endl;
+
+	SDL_SetColorKey(loadedSurface, SDL_TRUE, SDL_MapRGB(loadedSurface->format, 128, 255, 128));
+
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
+
+	SDL_FreeSurface(loadedSurface);
+
 	return texture;
 }
 
@@ -51,7 +57,7 @@ void RenderWindow::render(entity &p_entity, SDL_Rect &camera)
 	dst.w = p_entity.getCurrentFrame().w;
 	dst.h = p_entity.getCurrentFrame().h;
 
-	SDL_RenderCopy(renderer, p_entity.getTex(), &src, &dst);
+	SDL_RenderCopyEx(renderer, p_entity.getTex(), &src, &dst, 0, NULL, p_entity.getFlip());
 }
 
 void RenderWindow::cleanUp()

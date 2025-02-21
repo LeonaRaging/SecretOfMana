@@ -23,10 +23,11 @@ int main(int argc, char* args[])
 
 	RenderWindow window("GAME");
 
-	bool gameRunning = true;
+	bool gameRunning = true, pause = false;
 
 	SDL_Event event;
 	SDL_Texture* playerTexture = window.loadTexture("res/image/player.png");
+	SDL_Texture* rectTexture = window.loadTexture("res/image/rect.png");
 
 	player p(vector2f(300, 500), playerTexture); 
 	SDL_Rect camera;
@@ -43,7 +44,28 @@ int main(int argc, char* args[])
 		{
 			if (event.type == SDL_QUIT)
 				gameRunning = false;
+			
+			else if (event.type == SDL_WINDOWEVENT) 
+			{
+				switch (event.window.event)
+				{
+					case SDL_WINDOWEVENT_FOCUS_LOST: 
+						pause = true;
+						cout << "window lost focus!" << endl;
+						break;
+					case SDL_WINDOWEVENT_FOCUS_GAINED:
+						pause = false;
+						cout << "window gain focus!" << endl;
+						break;
+					case SDL_WINDOWEVENT_MOVED:
+						pause = true;
+						cout << "window is moving!" << endl;
+						break;
+				}
+			}
 		}
+
+		if (pause) continue;
 
 		window.init();
 
@@ -55,11 +77,14 @@ int main(int argc, char* args[])
 		update(camera, p);
 
 		entities.push_back(p);
+		
+		// entities.emplace_back(vector2f(p.getPos().x, p.getPos().y + 26), rectTexture, 0, 0, p.getLegRect().w, 6);
 
 		window.render(p_map.e, camera);
 
 		// for (entity &e: p_map.tiles)
 			// window.render(e, camera);
+
 		for (entity &e : entities)
 			window.render(e, camera);
 

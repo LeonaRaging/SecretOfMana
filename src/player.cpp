@@ -44,6 +44,7 @@ player::player(vector2f p_pos, SDL_Texture* p_tex)
 SDL_Rect player::getLegRect() 
 {
 	SDL_Rect p_rect = getRect();
+	p_rect.w = 16;
 	p_rect.y = pos.y + 26;
 	p_rect.h = 6;
 
@@ -67,7 +68,7 @@ void player::update(vector<entity>& wall, float currentTime)
 		setFlip(SDL_FLIP_NONE);
 	}
 
-	if (keys[SDL_SCANCODE_S]) {
+	else if (keys[SDL_SCANCODE_S]) {
 		moveX(speed);
 		if (isCollision(getLegRect(), wall))
 			moveX(-speed);
@@ -77,7 +78,7 @@ void player::update(vector<entity>& wall, float currentTime)
 		setFlip(SDL_FLIP_NONE);
 	}
 
-	if (keys[SDL_SCANCODE_A]) {
+	else if (keys[SDL_SCANCODE_A]) {
 		moveY(-speed);
 		if (isCollision(getLegRect(), wall))
 			moveY(speed);
@@ -87,7 +88,7 @@ void player::update(vector<entity>& wall, float currentTime)
 		setFlip(SDL_FLIP_HORIZONTAL);
 	}
 
-	if (keys[SDL_SCANCODE_D]) {
+	else if (keys[SDL_SCANCODE_D]) {
 		moveY(speed);
 		if (isCollision(getLegRect(), wall))
 			moveY(-speed);
@@ -100,7 +101,7 @@ void player::update(vector<entity>& wall, float currentTime)
 	if (isMoving) {
 		currentFrame = sprites[direction][order];
 
-		if (currentTime - lastUpdate > 100) {
+		if (currentTime - lastUpdate > 70) {
 			order++;
 			order %= 6;
 			lastUpdate = currentTime;

@@ -94,13 +94,13 @@ map dragon_cave_2(RenderWindow &window)
 	p_tiles.emplace_back(vector2f(281, 369), rectTexture, 0, 0, 8, 94);
 	p_tiles.emplace_back(vector2f(272, 376), rectTexture, 0, 0, 10, 79);
 	p_tiles.emplace_back(vector2f(255, 400), rectTexture, 0, 0, 17, 47);
-	p_tiles.emplace_back(vector2f(242, 346), rectTexture, 0, 0, 13, 155);
+	p_tiles.emplace_back(vector2f(242, 346), rectTexture, 0, 0, 13, 115);
 	p_tiles.emplace_back(vector2f(230, 460), rectTexture, 0, 0, 12, 30);
 	p_tiles.emplace_back(vector2f(152, 483), rectTexture, 0, 0, 78, 11);
 	p_tiles.emplace_back(vector2f(218, 336), rectTexture, 0, 0, 32, 10);
 	p_tiles.emplace_back(vector2f(208, 345), rectTexture, 0, 0, 9, 55);
 	p_tiles.emplace_back(vector2f(143, 474), rectTexture, 0, 0, 9, 10);
-	p_tiles.emplace_back(vector2f(127, 428), rectTexture, 0, 0, 16, 36);
+	p_tiles.emplace_back(vector2f(127, 428), rectTexture, 0, 0, 16, 46);
 	p_tiles.emplace_back(vector2f(118, 420), rectTexture, 0, 0, 10, 8);
 	p_tiles.emplace_back(vector2f(112, 364), rectTexture, 0, 0, 6, 56);
 	p_tiles.emplace_back(vector2f(104, 356), rectTexture, 0, 0, 8, 8);

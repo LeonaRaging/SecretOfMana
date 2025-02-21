@@ -6,7 +6,6 @@
 
 #include "RenderWindow.hpp"
 #include "entity.hpp"
-#include "default.hpp"
 #include "player.hpp"
 #include "enemy.hpp"
 #include "map.hpp"
@@ -26,10 +25,9 @@ int main(int argc, char* args[])
 	bool gameRunning = true, pause = false;
 
 	SDL_Event event;
-	SDL_Texture* playerTexture = window.loadTexture("res/image/player.png");
 	SDL_Texture* rectTexture = window.loadTexture("res/image/rect.png");
 
-	player p(vector2f(300, 500), playerTexture); 
+	player p(vector2f(300, 500), window); 
 	SDL_Rect camera;
 
 	vector<entity> entities;
@@ -74,11 +72,9 @@ int main(int argc, char* args[])
 		float currentTime = SDL_GetPerformanceCounter() / (float)SDL_GetPerformanceFrequency() * 1000.0f;
 
 		p.update(p_map.tiles, currentTime);
-		update(camera, p);
+		p.update_camera(camera);
 
-		entities.push_back(p);
-		
-		// entities.emplace_back(vector2f(p.getPos().x, p.getPos().y + 26), rectTexture, 0, 0, p.getLegRect().w, 6);
+		entities.emplace_back(vector2f(p.getPos().x, p.getPos().y + 26), rectTexture, 0, 0, p.getLegRect().w, 6);
 
 		window.render(p_map.e, camera);
 
@@ -87,6 +83,8 @@ int main(int argc, char* args[])
 
 		for (entity &e : entities)
 			window.render(e, camera);
+
+		window.render_player(p, camera);
 
 		window.display(p.getPos());
 

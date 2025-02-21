@@ -1,6 +1,4 @@
 #include "entity.hpp"
-#include "default.hpp"
-
 
 entity::entity(vector2f p_pos, SDL_Texture* p_tex, int p_x, int p_y, int p_w, int p_h):
 	pos(p_pos), tex(p_tex)

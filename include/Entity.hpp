@@ -19,8 +19,6 @@ public:
 	void moveY(int p_speed);
 protected:
 	vector2f pos;
-
-	int disX, disY;
 	SDL_RendererFlip flip;
 	SDL_Rect currentFrame;
 	SDL_Texture* tex;

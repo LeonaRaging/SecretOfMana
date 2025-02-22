@@ -69,8 +69,8 @@ void RenderWindow::render_player(entity &p_entity, SDL_Rect &camera)
 	src.h = p_entity.getCurrentFrame().h;
 
 	SDL_Rect dst;
-	dst.x = p_entity.getPos().x - 40 - camera.x;
-	dst.y = p_entity.getPos().y - 16 - camera.y;
+	dst.x = p_entity.getPos().x - 42 - camera.x;
+	dst.y = p_entity.getPos().y - 42 - camera.y;
 	dst.w = p_entity.getCurrentFrame().w;
 	dst.h = p_entity.getCurrentFrame().h;
 

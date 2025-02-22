@@ -31,6 +31,8 @@ int main(int argc, char* args[])
 	SDL_Rect camera;
 
 	vector<entity> entities;
+	vector<enemy> enemies;
+	enemies.emplace_back(vector2f(300, 600), rectTexture);
 	
 	map p_map = dragon_cave_2(window);
 
@@ -71,10 +73,10 @@ int main(int argc, char* args[])
 
 		float currentTime = SDL_GetPerformanceCounter() / (float)SDL_GetPerformanceFrequency() * 1000.0f;
 
-		p.update(p_map.tiles, currentTime);
+		p.update(p_map.tiles, enemies, currentTime);
 		p.update_camera(camera);
 
-		entities.emplace_back(vector2f(p.getPos().x, p.getPos().y + 26), rectTexture, 0, 0, p.getLegRect().w, 6);
+		entities.emplace_back(p.getPos(), rectTexture, 0, 0, 12, 6);
 
 		window.render(p_map.e, camera);
 
@@ -82,6 +84,8 @@ int main(int argc, char* args[])
 			// window.render(e, camera);
 
 		for (entity &e : entities)
+			window.render(e, camera);
+		for (enemy &e : enemies)
 			window.render(e, camera);
 
 		window.render_player(p, camera);
@@ -93,7 +97,7 @@ int main(int argc, char* args[])
 		float elapsedMS = (End - Start) / (float)SDL_GetPerformanceFrequency() * 1000.0f;
 
 		SDL_Delay(floor(16.666f - elapsedMS));
-		cout << elapsedMS << endl;
+		// cout << elapsedMS << endl;
 	}
 
 	window.cleanUp();

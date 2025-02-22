@@ -5,7 +5,7 @@ player::player(vector2f p_pos, RenderWindow &window)
 {
 	speed = 1; order = 0; lastUpdate = 0; direction = 0; isAttacking = 0;
 
-	movingTexture = window.loadTexture("res/image/player/player.png");
+	movingTexture = window.loadTexture("res/image/player/moving.png");
 	attackTexture = window.loadTexture("res/image/player/attack.png");
 
 	stance.emplace_back(SDL_Rect{ 0, 0, 96, 64 });
@@ -15,8 +15,8 @@ player::player(vector2f p_pos, RenderWindow &window)
 
 	sprites[0].emplace_back(SDL_Rect{ 0, 64, 96, 64 });
 	sprites[1].emplace_back(SDL_Rect{ 0, 192, 96, 64 });
-	sprites[2].emplace_back(SDL_Rect{ 0, 132, 96, 64});
-	sprites[3].emplace_back(SDL_Rect{ 0, 132, 96, 64 });
+	sprites[2].emplace_back(SDL_Rect{ 0, 128, 96, 64});
+	sprites[3].emplace_back(SDL_Rect{ 0, 128, 96, 64 });
 
 	for (int i = 0; i < 4; i++)
 		CreateSprite(sprites[i], 6);
@@ -28,19 +28,23 @@ player::player(vector2f p_pos, RenderWindow &window)
 
 	for (int i = 0; i < 4; i++)
 		CreateSprite(attack[i], 5);
+
+	attackHitbox[0] = SDL_Rect{ 16, 0, 64, 48};
+	attackHitbox[1] = SDL_Rect{ 16, 32, 48, 32};
+	attackHitbox[2] = SDL_Rect{ 16, 16, 32, 32};
+	attackHitbox[3] = SDL_Rect{ 48, 16, 32, 32};
 }
 
 SDL_Rect player::getLegRect() 
 {
 	SDL_Rect p_rect = getRect();
-	p_rect.w = 16;
-	p_rect.y = pos.y + 26;
+	p_rect.w = 12;
 	p_rect.h = 6;
 
 	return p_rect;
 }
 
-void player::update(vector<entity>& wall, float currentTime) 
+void player::update(vector<entity>& wall, vector<enemy> &enemies, float currentTime) 
 {
 	const Uint8* keys = SDL_GetKeyboardState(NULL);
 
@@ -52,6 +56,8 @@ void player::update(vector<entity>& wall, float currentTime)
 		{
 			isAttacking = 5;
 			order = 0;
+			for (enemy &p_enemy : enemies)
+				p_enemy.resetHitState();
 		}
 
 		else if (keys[SDL_SCANCODE_W])
@@ -100,6 +106,20 @@ void player::update(vector<entity>& wall, float currentTime)
 	{
 		tex = attackTexture;
 		currentFrame = attack[direction][order];
+		if (order == 2)
+		{
+			for (int index = 0; index < (int)enemies.size(); index++)
+			{	
+				int state = enemies[index].isHit(pos, attackHitbox[direction]);
+
+				if (state == 2) 
+				{
+					swap(enemies[index], enemies.back());
+					enemies.pop_back();
+					index--;
+				}
+			}
+		}
 	}
 
 	else if (isMoving) 
@@ -114,7 +134,7 @@ void player::update(vector<entity>& wall, float currentTime)
 		currentFrame = stance[direction];
 	}
 
-	if (currentTime - lastUpdate > 100) {
+	if (currentTime - lastUpdate > 70) {
 		order++;
 		if (isAttacking) {
 
@@ -130,9 +150,6 @@ void player::update(vector<entity>& wall, float currentTime)
 
 void player::update_camera(SDL_Rect &camera)
 {
-	camera.x = camera.y = 0;
-	camera.w = LEVEL_WIDTH, camera.h = SCREEN_HEIGHT;
-
 	camera.x = pos.x - SCREEN_HEIGHT / 2;
 	camera.y = pos.y - SCREEN_WIDTH / 2;
 	camera.w = SCREEN_WIDTH;

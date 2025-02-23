@@ -32,10 +32,10 @@ def process_map(map_img, tiles, tile_width, tile_height):
             index = -1  # Default if no match
             for i, tile in enumerate(tiles):
                 if compare_tiles(map_tile, tile):
-                    index = i
+                    index = i 
                     break
             if index == -1:
-                print(x, y)
+                print(x / 16, y / 16)
             row.append(index)
         indices.append(row)
     return indices
@@ -48,7 +48,7 @@ def save_to_txt(indices, filename):
 if __name__ == "__main__":
     # Paths to images
     map_tiles_path = "Tiles.png"
-    map_path = "dragon_cave_2.png"
+    map_path = "dragon_cave_5.png"
 
     # Set your tile size
     TILE_WIDTH = 16

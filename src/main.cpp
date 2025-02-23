@@ -35,7 +35,7 @@ int main(int argc, char* args[])
 	vector<enemy> enemies;
 	enemies.emplace_back(vector2f(300, 600), rectTexture);
 	
-	map p_map = dragon_cave_2(window);
+	map p_map = createMap(window, 5, 18, 17);
 
 	while (gameRunning) 
 	{
@@ -91,8 +91,8 @@ int main(int argc, char* args[])
 		// entity p_entity = entity(vector2f(0, 0), tilesTexture, 224, 64, 16, 16);
 		// window.render(p_entity, camera);
 
-		// for (entity &e: p_map.tiles)
-			// window.render(e, camera);
+		for (entity &e: p_map.tiles)
+			window.render(e, camera);
 
 		for (entity &e : entities)
 			window.render(e, camera);

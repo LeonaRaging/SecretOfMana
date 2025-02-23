@@ -18,4 +18,4 @@ private:
 
 void init(RenderWindow &window);
 
-map dragon_cave_2(RenderWindow &window);
+map createMap(RenderWindow &window, int index, int width, int height);

@@ -134,7 +134,7 @@ void player::update(vector<entity>& wall, vector<enemy> &enemies, float currentT
 		currentFrame = stance[direction];
 	}
 
-	if (currentTime - lastUpdate > 70) {
+	if (currentTime - lastUpdate > 100) {
 		order++;
 		if (isAttacking) {
 
@@ -150,8 +150,8 @@ void player::update(vector<entity>& wall, vector<enemy> &enemies, float currentT
 
 void player::update_camera(SDL_Rect &camera)
 {
-	camera.x = pos.x - SCREEN_HEIGHT / 2;
-	camera.y = pos.y - SCREEN_WIDTH / 2;
+	camera.x = pos.x - SCREEN_WIDTH / 2;
+	camera.y = pos.y - SCREEN_HEIGHT / 2;
 	camera.w = SCREEN_WIDTH;
 	camera.h = SCREEN_HEIGHT;
 

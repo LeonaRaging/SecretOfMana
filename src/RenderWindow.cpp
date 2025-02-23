@@ -57,7 +57,7 @@ void RenderWindow::render(entity &p_entity, SDL_Rect &camera)
 	dst.w = p_entity.getCurrentFrame().w;
 	dst.h = p_entity.getCurrentFrame().h;
 
-	SDL_RenderCopyEx(renderer, p_entity.getTex(), &src, &dst, 0, NULL, p_entity.getFlip());
+	SDL_RenderCopy(renderer, p_entity.getTex(), &src, &dst);
 }
 
 void RenderWindow::render_player(entity &p_entity, SDL_Rect &camera)

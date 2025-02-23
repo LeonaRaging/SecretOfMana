@@ -11,6 +11,12 @@ entity::entity(vector2f p_pos, SDL_Texture* p_tex, int p_x, int p_y, int p_w, in
 	currentFrame.h = p_h;
 }
 
+entity::entity(vector2f p_pos, SDL_Texture* p_tex, SDL_Rect p_rect):
+	pos(p_pos), tex(p_tex), currentFrame(p_rect)
+{
+	
+}
+
 vector2f& entity::getPos()
 {
 	return pos;

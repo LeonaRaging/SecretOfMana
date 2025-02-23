@@ -3,14 +3,19 @@
 #include "RenderWindow.hpp"
 #include "entity.hpp"
 
+extern SDL_Texture* tilesTexture;
+extern vector<SDL_Rect> mapTiles;
+extern vector<SDL_Rect> tileHitbox[200];
+
 class map
 {
 public:
-	map(entity p_e, vector<entity> p_tiles);
-	entity e;
+	map(vector<vector<int>> p_vector, vector<entity> p_tiles);
+	vector<vector<int>> tilesIndex;
 	vector<entity> tiles;
-
 private:
 };
+
+void init(RenderWindow &window);
 
 map dragon_cave_2(RenderWindow &window);

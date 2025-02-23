@@ -30,6 +30,7 @@ int main(int argc, char* args[])
 	player p(vector2f(300, 500), window); 
 	SDL_Rect camera;
 
+	init(window);
 	vector<entity> entities;
 	vector<enemy> enemies;
 	enemies.emplace_back(vector2f(300, 600), rectTexture);
@@ -71,14 +72,24 @@ int main(int argc, char* args[])
 
 		entities.clear();
 
-		float currentTime = SDL_GetPerformanceCounter() / (float)SDL_GetPerformanceFrequency() * 1000.0f;
+		float Perf = SDL_GetPerformanceFrequency();
+		if (Perf == 0) Perf = 1;
+		float currentTime = SDL_GetPerformanceCounter() / (float)Perf * 1000.0f;
 
 		p.update(p_map.tiles, enemies, currentTime);
 		p.update_camera(camera);
 
 		entities.emplace_back(p.getPos(), rectTexture, 0, 0, 12, 6);
 
-		window.render(p_map.e, camera);
+		for (int i = 0; i < (int)p_map.tilesIndex.size(); i++)
+			for (int j = 0; j < (int)p_map.tilesIndex[i].size(); j++)
+			{
+				entity p_entity = entity(vector2f(j * 16, i * 16), tilesTexture, mapTiles[p_map.tilesIndex[i][j]]);
+				window.render(p_entity, camera);
+			}
+		// system("pause");
+		// entity p_entity = entity(vector2f(0, 0), tilesTexture, 224, 64, 16, 16);
+		// window.render(p_entity, camera);
 
 		// for (entity &e: p_map.tiles)
 			// window.render(e, camera);
@@ -94,10 +105,12 @@ int main(int argc, char* args[])
 
 		Uint32 End = SDL_GetPerformanceCounter();
 
-		float elapsedMS = (End - Start) / (float)SDL_GetPerformanceFrequency() * 1000.0f;
+		Perf = SDL_GetPerformanceFrequency();
+		if (Perf == 0) Perf = 1;
+		float elapsedMS = (End - Start) / (float)Perf * 1000.0f;
 
 		SDL_Delay(floor(16.666f - elapsedMS));
-		// cout << elapsedMS << endl;
+		cout << elapsedMS << endl;
 	}
 
 	window.cleanUp();

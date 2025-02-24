@@ -9,7 +9,7 @@ class player: public entity
 public:
 	player(vector2f p_pos, RenderWindow &window);
 	SDL_Rect getLegRect();
-	SDL_Rect getAttackHitbox();
+	void setPos(vector2f p_pos);
 	void update(vector<entity> &wall, vector<enemy> &enemies, float currentTime);
 	void update_camera(SDL_Rect &camera);
 private:

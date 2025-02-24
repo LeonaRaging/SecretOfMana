@@ -44,6 +44,11 @@ SDL_Rect player::getLegRect()
 	return p_rect;
 }
 
+void player::setPos(vector2f p_pos)
+{
+	pos = p_pos;
+}
+
 void player::update(vector<entity>& wall, vector<enemy> &enemies, float currentTime) 
 {
 	const Uint8* keys = SDL_GetKeyboardState(NULL);
@@ -60,45 +65,49 @@ void player::update(vector<entity>& wall, vector<enemy> &enemies, float currentT
 				p_enemy.resetHitState();
 		}
 
-		else if (keys[SDL_SCANCODE_W])
+		else 
 		{
-			moveX(-speed);
-			if (isCollision(getLegRect(), wall))
-				moveX(speed);
-
-			direction = 0;
-			isMoving = true;
-			setFlip(SDL_FLIP_NONE);
-		}
-
-		else if (keys[SDL_SCANCODE_S]) {
-			moveX(speed);
-			if (isCollision(getLegRect(), wall))
+			if (keys[SDL_SCANCODE_W])
+			{
 				moveX(-speed);
-			
-			direction = 1;
-			isMoving = true;
-			setFlip(SDL_FLIP_NONE);
-		}
+				if (isCollision(getLegRect(), wall))
+					moveX(speed);
 
-		else if (keys[SDL_SCANCODE_A]) {
-			moveY(-speed);
-			if (isCollision(getLegRect(), wall))
-				moveY(speed);
-			
-			direction = 2;
-			isMoving = true;
-			setFlip(SDL_FLIP_HORIZONTAL);
-		}
+				direction = 0;
+				isMoving = true;
+				setFlip(SDL_FLIP_NONE);
+			}
 
-		else if (keys[SDL_SCANCODE_D]) {
-			moveY(speed);
-			if (isCollision(getLegRect(), wall))
+			if (keys[SDL_SCANCODE_S]) {
+				moveX(speed);
+				if (isCollision(getLegRect(), wall))
+					moveX(-speed);
+				
+				direction = 1;
+				isMoving = true;
+				setFlip(SDL_FLIP_NONE);
+			}
+
+			if (keys[SDL_SCANCODE_A]) {
 				moveY(-speed);
-			
-			direction = 3;
-			isMoving = true;
-			setFlip(SDL_FLIP_NONE);
+				if (isCollision(getLegRect(), wall))
+					moveY(speed);
+				
+				direction = 2;
+				isMoving = true;
+				setFlip(SDL_FLIP_HORIZONTAL);
+			}
+
+			if (keys[SDL_SCANCODE_D]) {
+				moveY(speed);
+				if (isCollision(getLegRect(), wall))
+					moveY(-speed);
+				
+				direction = 3;
+				isMoving = true;
+				setFlip(SDL_FLIP_NONE);
+			}
+
 		}
 	}
 
@@ -156,7 +165,7 @@ void player::update_camera(SDL_Rect &camera)
 	camera.h = SCREEN_HEIGHT;
 
 	if (camera.x < 0) camera.x = 0;
-	if (camera.x > LEVEL_HEIGHT - camera.x) camera.x = LEVEL_HEIGHT - camera.x;
+	if (camera.x > LEVEL_WIDTH - SCREEN_WIDTH) camera.x = LEVEL_WIDTH - SCREEN_WIDTH;
 	if (camera.y < 0) camera.y = 0;
-	if (camera.y > LEVEL_WIDTH - camera.y) camera.y = LEVEL_WIDTH - camera.y;
+	if (camera.y > LEVEL_HEIGHT - SCREEN_HEIGHT) camera.y = LEVEL_HEIGHT - SCREEN_HEIGHT;
 }

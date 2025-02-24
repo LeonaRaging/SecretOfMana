@@ -42,16 +42,18 @@ void init(RenderWindow &window)
 	tileHitBox[28].emplace_back(SDL_Rect{ 8, 8, 8, 8});
 	tileHitBox[38].emplace_back(SDL_Rect{ 0, 8, 8, 8});
 	tileHitBox[38].emplace_back(SDL_Rect{ 8, 0, 8, 8});
-	tileHitBox[40].emplace_back(SDL_Rect{ 0, 0, 1, 16 });
-	tileHitBox[41].emplace_back(SDL_Rect{ 0, 0, 16, 16 });
-	tileHitBox[42].emplace_back(SDL_Rect{ 15, 0, 1 , 16 });
+	tileHitBox[39].emplace_back(SDL_Rect{ 0, 0, 8, 8});
+	tileHitBox[39].emplace_back(SDL_Rect{ 8, 8, 8, 8});
+	tileHitBox[40].emplace_back(SDL_Rect{ 0, 0, 1, 16});
+	tileHitBox[41].emplace_back(SDL_Rect{ 0, 0, 16, 16});
+	tileHitBox[42].emplace_back(SDL_Rect{ 15, 0, 1, 16});
 	tileHitBox[52].emplace_back(SDL_Rect{ 0, 0, 8, 8});
 	tileHitBox[52].emplace_back(SDL_Rect{ 8, 8, 8, 8});
 	tileHitBox[56].emplace_back(SDL_Rect{ 0, 0, 8, 8});
 	tileHitBox[56].emplace_back(SDL_Rect{ 8, 8, 8, 8});
 	tileHitBox[57].emplace_back(SDL_Rect{ 0, 8, 16, 8});
 	tileHitBox[58].emplace_back(SDL_Rect{ 8, 0, 8, 8});
-	tileHitBox[58].emplace_back(SDL_Rect{ 8, 0, 8, 8});
+	tileHitBox[58].emplace_back(SDL_Rect{ 0, 8, 8, 8});
 	tileHitBox[58].emplace_back(SDL_Rect{ 15, 0, 1, 16});
 	tileHitBox[71].emplace_back(SDL_Rect{ 8, 0, 8, 8});
 	tileHitBox[71].emplace_back(SDL_Rect{ 0, 8, 8, 8});
@@ -73,6 +75,17 @@ map::map(vector<vector<int>> p_vector, vector<entity> p_tiles)
 
 }
 
+map::map()
+{
+
+}
+
+portal::portal(SDL_Rect p_rect, int p_int, vector2f p_vector):
+	area(p_rect), targetMap(p_int), targetPosition(p_vector)
+{
+
+}
+
 map createMap(RenderWindow &window, int index, int width, int height)
 {
 	vector<vector<int>> p_vector(height);
@@ -84,11 +97,86 @@ map createMap(RenderWindow &window, int index, int width, int height)
 		for (int j = 0; j < width; j++)
 		{
 			int index; cin >> index; 
-			cout << index << endl;
+			// cout << index << endl;
 			p_vector[i].push_back(index);
 			for (SDL_Rect &p_rect : tileHitBox[index])
 				p_tiles.emplace_back(vector2f(j * 16 + p_rect.x, i * 16 + p_rect.y), rectTexture, p_rect);
 		}
 	}
 	return map(p_vector, p_tiles);	
+}
+
+map dragon_cave_1(RenderWindow &window)
+{
+	map p_map = createMap(window, 1, 43, 40);
+	
+	p_map.portals.emplace_back(SDL_Rect{ 240, 480, 32, 4 }, 2, vector2f(283, 560));
+	p_map.portals.emplace_back(SDL_Rect{ 96, 336, 32, 4  }, 2, vector2f(171, 368));
+	p_map.portals.emplace_back(SDL_Rect{ 352, 508, 32, 4 }, 3, vector2f(459, 496));
+	p_map.portals.emplace_back(SDL_Rect{ 384, 268, 32, 4 }, 3, vector2f(475, 256));
+	p_map.portals.emplace_back(SDL_Rect{ 32, 220, 32, 4 }, 3, vector2f(171, 240));
+
+	p_map.index = 1;
+	return p_map;
+}
+
+map dragon_cave_2(RenderWindow &window)
+{
+	map p_map = createMap(window, 2, 38, 37);
+
+	p_map.portals.emplace_back(SDL_Rect{ 272, 572, 32, 4 }, 1, vector2f(251, 495 ));
+	p_map.portals.emplace_back(SDL_Rect{ 160, 380, 32, 4 }, 1, vector2f(107, 352));
+
+	p_map.index = 2;
+	return p_map;
+}
+
+map dragon_cave_3(RenderWindow &window)
+{
+	map p_map = createMap(window, 3, 51, 41);
+
+	p_map.portals.emplace_back(SDL_Rect{ 448, 480, 32, 4 }, 1, vector2f(363, 496 ));
+	p_map.portals.emplace_back(SDL_Rect{ 464, 240, 32, 4 }, 1, vector2f(395, 256 ));
+	p_map.portals.emplace_back(SDL_Rect{ 160, 224, 32, 4 }, 1 , vector2f(43, 208 ));
+	p_map.portals.emplace_back(SDL_Rect{ 432, 64 , 32, 4 }, 4 , vector2f(235, 176));
+	p_map.portals.emplace_back(SDL_Rect{ 240, 556, 32, 4 }, 5 , vector2f(235, 48));
+
+	p_map.index = 3;
+	return p_map;
+}
+
+map dragon_cave_4(RenderWindow &window)
+{
+	map p_map = createMap(window, 4, 19, 19);
+
+	p_map.portals.emplace_back(SDL_Rect{ 224, 188, 32, 4 }, 3, vector2f(443, 80));
+
+	p_map.index = 4;
+	return p_map;
+}
+
+map dragon_cave_5(RenderWindow &window)
+{
+	map p_map = createMap(window, 5, 18, 17);
+
+	p_map.portals.emplace_back(SDL_Rect{224, 32, 32, 4}, 3, vector2f(251, 544));
+
+	p_map.index = 5;
+	return p_map;
+}
+
+int map::checkPortals(player &p, int &isFading, int &alpha)
+{
+	SDL_Rect position = p.getLegRect();
+	for (portal p_portal : portals)
+	{
+		if (SDL_HasIntersection(&position, &p_portal.area))
+		{
+			isFading = 1; alpha = 0;
+			p.setPos(p_portal.targetPosition);
+			return p_portal.targetMap;
+		}
+	}
+
+	return index;
 }

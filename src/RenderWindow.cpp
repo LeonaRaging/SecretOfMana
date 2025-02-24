@@ -17,7 +17,7 @@ RenderWindow::RenderWindow(const char* p_title)
 
 void RenderWindow::init() 
 {
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 	SDL_RenderClear(renderer);
 	SDL_RenderSetLogicalSize(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
 }
@@ -38,7 +38,7 @@ SDL_Texture* RenderWindow::loadTexture(const char* p_filePath)
 	return texture;
 }
 
-void RenderWindow::display(vector2f p_pos)
+void RenderWindow::display()
 {
 	SDL_RenderPresent(renderer);
 }
@@ -76,6 +76,26 @@ void RenderWindow::render_player(entity &p_entity, SDL_Rect &camera)
 
 	SDL_RenderCopyEx(renderer, p_entity.getTex(), &src, &dst, 0, NULL, p_entity.getFlip());
 }
+
+void RenderWindow::fade(int &isFading, int &alpha)
+{
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, alpha);
+	SDL_RenderFillRect(renderer, NULL);
+	
+	int speed = 5;
+
+	if (isFading == 1)
+	{
+		alpha += speed;
+		if (alpha >= 255) isFading = 2;
+	}
+	else
+	{
+		alpha -= speed;
+		if (alpha <= 0) isFading = 0;
+	}
+}
+
 
 void RenderWindow::cleanUp()
 {

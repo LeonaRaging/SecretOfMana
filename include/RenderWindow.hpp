@@ -11,7 +11,8 @@ public:
 	SDL_Texture* loadTexture(const char* p_filePath);
 	void render(entity &e, SDL_Rect &camera);
 	void render_player(entity &e, SDL_Rect &camera);
-	void display(vector2f p_pos);
+	void fade(int &isFading, int &alpha);
+	void display();
 	void cleanUp();
 private:
 	SDL_Window* window;

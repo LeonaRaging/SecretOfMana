@@ -23,19 +23,26 @@ int main(int argc, char* args[])
 	RenderWindow window("GAME");
 
 	bool gameRunning = true, pause = false;
+	int isFading = 0, alpha;
 
 	SDL_Event event;
 	SDL_Texture* rectTexture = window.loadTexture("res/image/rect.png");
 
-	player p(vector2f(300, 500), window); 
+	player p(vector2f(248, 586), window); 
 	SDL_Rect camera;
 
 	init(window);
 	vector<entity> entities;
 	vector<enemy> enemies;
-	enemies.emplace_back(vector2f(300, 600), rectTexture);
+	// enemies.emplace_back(vector2f(2, 600), rectTexture);
 	
-	map p_map = createMap(window, 5, 18, 17);
+	map maps[6];
+	maps[1] = dragon_cave_1(window);
+	maps[2] = dragon_cave_2(window);
+	maps[3] = dragon_cave_3(window);
+	maps[4] = dragon_cave_4(window);
+	maps[5] = dragon_cave_5(window);
+	map currentMap = maps[1];
 
 	while (gameRunning) 
 	{
@@ -68,40 +75,53 @@ int main(int argc, char* args[])
 
 		if (pause) continue;
 
-		window.init();
 
-		entities.clear();
 
 		float Perf = SDL_GetPerformanceFrequency();
 		if (Perf == 0) Perf = 1;
 		float currentTime = SDL_GetPerformanceCounter() / (float)Perf * 1000.0f;
 
-		p.update(p_map.tiles, enemies, currentTime);
-		p.update_camera(camera);
+		currentMap = maps[currentMap.checkPortals(p, isFading, alpha)];
 
-		entities.emplace_back(p.getPos(), rectTexture, 0, 0, 12, 6);
+		if (isFading == 1) {
+			window.fade(isFading, alpha);
+		}
+		
+		else 
+		{
+			window.init();
+			entities.clear();
+			
+			p.update(currentMap.tiles, enemies, currentTime);
+			p.update_camera(camera);
 
-		for (int i = 0; i < (int)p_map.tilesIndex.size(); i++)
-			for (int j = 0; j < (int)p_map.tilesIndex[i].size(); j++)
-			{
-				entity p_entity = entity(vector2f(j * 16, i * 16), tilesTexture, mapTiles[p_map.tilesIndex[i][j]]);
-				window.render(p_entity, camera);
-			}
-		// system("pause");
-		// entity p_entity = entity(vector2f(0, 0), tilesTexture, 224, 64, 16, 16);
-		// window.render(p_entity, camera);
+			entities.emplace_back(p.getPos(), rectTexture, 0, 0, 12, 6);
 
-		for (entity &e: p_map.tiles)
-			window.render(e, camera);
+			for (int i = 0; i < (int)currentMap.tilesIndex.size(); i++)
+				for (int j = 0; j < (int)currentMap.tilesIndex[i].size(); j++)
+				{
+					entity p_entity = entity(vector2f(j * 16, i * 16), tilesTexture, mapTiles[currentMap.tilesIndex[i][j]]);
+					window.render(p_entity, camera);
+				}
 
-		for (entity &e : entities)
-			window.render(e, camera);
-		for (enemy &e : enemies)
-			window.render(e, camera);
+			// system("pause");
+			// entity p_entity = entity(vector2f(0, 0), tilesTexture, 224, 64, 16, 16);
+			// window.render(p_entity, camera);
 
-		window.render_player(p, camera);
+			// for (entity &e: currentMap.tiles)
+				// window.render(e, camera);
 
-		window.display(p.getPos());
+			for (entity &e : entities)
+				window.render(e, camera);
+			for (enemy &e : enemies)
+				window.render(e, camera);
+
+			window.render_player(p, camera);
+
+			if (isFading == 2) window.fade(isFading, alpha);
+		}		
+
+		window.display();
 
 		Uint32 End = SDL_GetPerformanceCounter();
 

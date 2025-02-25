@@ -26,15 +26,11 @@ int main(int argc, char* args[])
 	int isFading = 0, alpha;
 
 	SDL_Event event;
-	SDL_Texture* rectTexture = window.loadTexture("res/image/rect.png");
 
 	player p(vector2f(248, 586), window); 
 	SDL_Rect camera;
 
 	init(window);
-	vector<entity> entities;
-	vector<enemy> enemies;
-	// enemies.emplace_back(vector2f(2, 600), rectTexture);
 	
 	map maps[6];
 	maps[1] = dragon_cave_1(window);
@@ -90,33 +86,36 @@ int main(int argc, char* args[])
 		else 
 		{
 			window.init();
-			entities.clear();
-			
-			p.update(currentMap.tiles, enemies, currentTime);
-			p.update_camera(camera);
 
-			entities.emplace_back(p.getPos(), rectTexture, 0, 0, 12, 6);
+			for (enemy *e : currentMap.enemies)
+				dynamic_cast<pebbler*>(e)->update(p.getPos(), currentMap.tiles, currentTime);
+						
+			p.update(currentMap.tiles, currentMap.enemies, currentTime);
+			p.update_camera(camera);
 
 			for (int i = 0; i < (int)currentMap.tilesIndex.size(); i++)
 				for (int j = 0; j < (int)currentMap.tilesIndex[i].size(); j++)
 				{
 					entity p_entity = entity(vector2f(j * 16, i * 16), tilesTexture, mapTiles[currentMap.tilesIndex[i][j]]);
-					window.render(p_entity, camera);
+					window.render_map(p_entity, camera);
 				}
 
 			// system("pause");
-			// entity p_entity = entity(vector2f(0, 0), tilesTexture, 224, 64, 16, 16);
-			// window.render(p_entity, camera);
 
 			// for (entity &e: currentMap.tiles)
 				// window.render(e, camera);
 
-			for (entity &e : entities)
-				window.render(e, camera);
-			for (enemy &e : enemies)
-				window.render(e, camera);
+			for (auto &e : currentMap.enemies)
+				window.render_entity(*e, camera);
 
-			window.render_player(p, camera);
+			SDL_Texture* rectTexture = window.loadTexture("res/image/enemy.png");
+			for (enemy *e : currentMap.enemies) {
+				entity p_entity = entity(dynamic_cast<pebbler*>(e)->getPos(), rectTexture, dynamic_cast<pebbler*>(e)->getLegRect());
+				window.render_map(p_entity, camera);
+				// cout << p_entity.getPos().x << ' ' << p_entity.getPos().y << endl;
+			}
+
+			window.render_entity(p, camera);
 
 			if (isFading == 2) window.fade(isFading, alpha);
 		}		
@@ -129,8 +128,8 @@ int main(int argc, char* args[])
 		if (Perf == 0) Perf = 1;
 		float elapsedMS = (End - Start) / (float)Perf * 1000.0f;
 
-		SDL_Delay(floor(16.666f - elapsedMS));
-		cout << elapsedMS << endl;
+		// SDL_Delay(floor(16.666f - elapsedMS));
+		// cout << elapsedMS << endl;
 	}
 
 	window.cleanUp();

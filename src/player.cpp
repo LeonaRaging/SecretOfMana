@@ -3,7 +3,7 @@
 player::player(vector2f p_pos, RenderWindow &window)
 	:entity(p_pos, NULL)
 {
-	speed = 1; order = 0; lastUpdate = 0; direction = 0; isAttacking = 0;
+	speed = 1; order = 0; lastUpdate = 0; direction = 0; state = 0;
 
 	movingTexture = window.loadTexture("res/image/player/moving.png");
 	attackTexture = window.loadTexture("res/image/player/attack.png");
@@ -49,69 +49,60 @@ void player::setPos(vector2f p_pos)
 	pos = p_pos;
 }
 
-void player::update(vector<entity>& wall, vector<enemy> &enemies, float currentTime) 
+void player::update(vector<entity>& wall, vector<enemy*> &enemies, float currentTime) 
 {
 	const Uint8* keys = SDL_GetKeyboardState(NULL);
 
-	bool isMoving = false;
-
-	if (!isAttacking)
+	if (timeLeft == 0)
 	{
 		if (keys[SDL_SCANCODE_J])
 		{
-			isAttacking = 5;
+			timeLeft = 5;
 			order = 0;
-			for (enemy &p_enemy : enemies)
-				p_enemy.resetHitState();
+			for (auto &p_enemy : enemies)
+				p_enemy->resetHitState();
+			state = 2;
 		}
 
 		else 
 		{
+			state = 0;
 			if (keys[SDL_SCANCODE_W])
 			{
-				moveX(-speed);
-				if (isCollision(getLegRect(), wall))
-					moveX(speed);
+				moveY(-speed, getLegRect(), wall);
 
 				direction = 0;
-				isMoving = true;
 				setFlip(SDL_FLIP_NONE);
+				state = 1;
 			}
 
 			if (keys[SDL_SCANCODE_S]) {
-				moveX(speed);
-				if (isCollision(getLegRect(), wall))
-					moveX(-speed);
+				moveY(speed, getLegRect(), wall);
 				
 				direction = 1;
-				isMoving = true;
 				setFlip(SDL_FLIP_NONE);
+				state = 1;
 			}
 
 			if (keys[SDL_SCANCODE_A]) {
-				moveY(-speed);
-				if (isCollision(getLegRect(), wall))
-					moveY(speed);
+				moveX(-speed, getLegRect(), wall);
 				
 				direction = 2;
-				isMoving = true;
 				setFlip(SDL_FLIP_HORIZONTAL);
+				state = 1;
 			}
 
 			if (keys[SDL_SCANCODE_D]) {
-				moveY(speed);
-				if (isCollision(getLegRect(), wall))
-					moveY(-speed);
+				moveX(speed, getLegRect(), wall);
 				
 				direction = 3;
-				isMoving = true;
 				setFlip(SDL_FLIP_NONE);
+				state = 1;
 			}
-
 		}
 	}
 
-	if (isAttacking)
+	if (state == 2)
 	{
 		tex = attackTexture;
 		currentFrame = attack[direction][order];
@@ -119,35 +110,35 @@ void player::update(vector<entity>& wall, vector<enemy> &enemies, float currentT
 		{
 			for (int index = 0; index < (int)enemies.size(); index++)
 			{	
-				int state = enemies[index].isHit(pos, attackHitbox[direction]);
-
-				if (state == 2) 
-				{
-					swap(enemies[index], enemies.back());
-					enemies.pop_back();
-					index--;
+				int current = enemies[index]->isHit(pos, attackHitbox[direction]);
+				if (current == 1) {
+					dynamic_cast<pebbler*>(enemies[index])->hurting();
+				}
+				else if (current == 2) {
+					dynamic_cast<pebbler*>(enemies[index])->dying();
 				}
 			}
 		}
 	}
 
-	else if (isMoving) 
+	if (state == 1) 
 	{
 		tex = movingTexture;
 		currentFrame = sprites[direction][order];
 	}
 
-	else
+	if (state == 0)
 	{
 		tex = movingTexture;
 		currentFrame = stance[direction];
 	}
 
-	if (currentTime - lastUpdate > 100) {
+	if (currentTime - lastUpdate > 100)
+	{
 		order++;
-		if (isAttacking) {
+		if (state == 2) {
 
-			isAttacking--;
+			timeLeft--;
 			order %= 5;
 		}
 		else order %= 6;

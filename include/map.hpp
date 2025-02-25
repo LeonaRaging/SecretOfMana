@@ -25,6 +25,7 @@ public:
 	vector<portal> portals;
 	int checkPortals(player &p_player, int &isFading, int &alpha);
 	int index;
+	vector<enemy*> enemies;
 private:
 };
 

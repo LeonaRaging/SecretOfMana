@@ -52,14 +52,32 @@ void entity::setFlip(SDL_RendererFlip p_flip)
 	flip = p_flip;
 }
 
-void entity::moveX(int p_speed)
+bool isCollision(SDL_Rect a, vector<entity>& b)
 {
-	if (pos.y + p_speed >= 0 && pos.y + p_speed < LEVEL_HEIGHT)
-		pos.y += p_speed;
+	for (int j = 0; j < (int)b.size(); j++)
+	{
+		SDL_Rect cur = b[j].getRect();
+		if (SDL_HasIntersection(&a, &cur) == SDL_TRUE) {
+			std::cout << "wall hit" << endl;
+			return true;
+		}
+	}
+	return false;
 }
 
-void entity::moveY(int p_speed) 
+void entity::moveX(int p_speed, SDL_Rect p_rect, vector<entity> &wall)
 {
-	if (pos.x + p_speed >= 0 && pos.x + p_speed < LEVEL_WIDTH)
-		pos.x += p_speed;
+
+	pos.x += p_speed; p_rect.x += p_speed;
+
+	if (isCollision(p_rect, wall))
+		pos.x -= p_speed;
+}
+
+void entity::moveY(int p_speed, SDL_Rect p_rect, vector<entity> &wall) 
+{
+	pos.y += p_speed; p_rect.y += p_speed;
+
+	if (isCollision(p_rect, wall))
+		pos.y -= p_speed;
 }

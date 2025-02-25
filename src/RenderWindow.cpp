@@ -43,7 +43,7 @@ void RenderWindow::display()
 	SDL_RenderPresent(renderer);
 }
 
-void RenderWindow::render(entity &p_entity, SDL_Rect &camera)
+void RenderWindow::render_map(entity &p_entity, SDL_Rect &camera)
 {
 	SDL_Rect src;
 	src.x = p_entity.getCurrentFrame().x;
@@ -60,7 +60,7 @@ void RenderWindow::render(entity &p_entity, SDL_Rect &camera)
 	SDL_RenderCopy(renderer, p_entity.getTex(), &src, &dst);
 }
 
-void RenderWindow::render_player(entity &p_entity, SDL_Rect &camera)
+void RenderWindow::render_entity(entity &p_entity, SDL_Rect &camera)
 {
 	SDL_Rect src;
 	src.x = p_entity.getCurrentFrame().x;
@@ -100,17 +100,4 @@ void RenderWindow::fade(int &isFading, int &alpha)
 void RenderWindow::cleanUp()
 {
 	SDL_DestroyWindow(window);
-}
-
-bool isCollision(SDL_Rect a, vector<entity>& b)
-{
-	for (int j = 0; j < (int)b.size(); j++)
-	{
-		SDL_Rect cur = b[j].getRect();
-		if (SDL_HasIntersection(&a, &cur) == SDL_TRUE) {
-			std::cout << "wall hit" << endl;
-			return true;
-		}
-	}
-	return false;
 }

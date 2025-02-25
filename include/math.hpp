@@ -4,6 +4,10 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <memory>
+#include <cmath>
+#include <random>
+#include <utility>
 
 using namespace std;
 
@@ -13,14 +17,17 @@ const int SCREEN_WIDTH = 256;
 const int SCREEN_HEIGHT = 244;
 const int TARGET_FPS = 100;
 const int FRAME_DELAY = 1000 / TARGET_FPS;
+const int aggroRadius = 200;
 
 struct vector2f 
 {
-	vector2f(float p_x, float p_y):
+	vector2f(int p_x = 0, int p_y = 0):
 		x(p_x), y(p_y) {}
-	vector2f():
-		x(0.0f), y(0.0f) {}
-	float x, y;
+	int x, y;
 };
 
 void CreateSprite(vector<SDL_Rect> &sprites, int size);
+
+float Distance(vector2f a, vector2f b);
+
+pair<int,int> RelativePostion(vector2f a, vector2f b);

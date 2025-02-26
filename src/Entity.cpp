@@ -47,6 +47,11 @@ SDL_RendererFlip entity::getFlip()
 	return flip;
 }
 
+void entity::setRect(SDL_Rect p_rect)
+{
+	currentFrame = p_rect;
+}
+
 void entity::setFlip(SDL_RendererFlip p_flip)
 {
 	flip = p_flip;

@@ -112,10 +112,30 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 			{	
 				int current = enemies[index]->isHit(pos, attackHitbox[direction]);
 				if (current == 1) {
-					dynamic_cast<pebbler*>(enemies[index])->hurting();
+
+					if (kimonobird* p_enemy = dynamic_cast<kimonobird*>(enemies[index]))
+					{
+						p_enemy->hurting();
+					}
+
+					if (pebbler* p_enemy = dynamic_cast<pebbler*>(enemies[index]))
+					{
+						p_enemy->hurting();
+					}
+
 				}
 				else if (current == 2) {
-					dynamic_cast<pebbler*>(enemies[index])->dying();
+
+					if (kimonobird* p_enemy = dynamic_cast<kimonobird*>(enemies[index]))
+					{
+						p_enemy->dying();
+					}
+
+					if (pebbler* p_enemy = dynamic_cast<pebbler*>(enemies[index]))
+					{
+						p_enemy->dying();
+					}
+
 				}
 			}
 		}

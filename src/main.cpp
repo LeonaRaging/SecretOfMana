@@ -87,8 +87,17 @@ int main(int argc, char* args[])
 		{
 			window.init();
 
-			for (enemy *e : currentMap.enemies)
-				dynamic_cast<pebbler*>(e)->update(p.getPos(), currentMap.tiles, currentTime);
+			for (enemy *e : currentMap.enemies) {
+				if (kimonobird* p_enemy = dynamic_cast<kimonobird*>(e))
+				{
+					p_enemy->update(p.getPos(), currentMap.tiles, currentTime);
+				}
+
+				if (pebbler* p_enemy = dynamic_cast<pebbler*>(e))
+				{
+					p_enemy->update(p.getPos(), currentMap.tiles, currentTime);
+				}
+			}
 						
 			p.update(currentMap.tiles, currentMap.enemies, currentTime);
 			p.update_camera(camera);
@@ -106,16 +115,23 @@ int main(int argc, char* args[])
 				// window.render(e, camera);
 
 			for (auto &e : currentMap.enemies)
-				window.render_entity(*e, camera);
+				if ((*e).getPos().y < p.getPos().y)
+					window.render_entity(*e, camera);
 
-			SDL_Texture* rectTexture = window.loadTexture("res/image/enemy.png");
-			for (enemy *e : currentMap.enemies) {
-				entity p_entity = entity(dynamic_cast<pebbler*>(e)->getPos(), rectTexture, dynamic_cast<pebbler*>(e)->getLegRect());
-				window.render_map(p_entity, camera);
-				// cout << p_entity.getPos().x << ' ' << p_entity.getPos().y << endl;
-			}
+			// SDL_Texture* rectTexture = window.loadTexture("res/image/enemy.png");
+			// for (enemy *e : currentMap.enemies) {
+			// 	entity p_entity = entity(dynamic_cast<pebbler*>(e)->getPos(), rectTexture, dynamic_cast<pebbler*>(e)->getLegRect());
+			// 	window.render_map(p_entity, camera);
+			// 	cout << p_entity.getPos().x << ' ' << p_entity.getPos().y << endl;
+			// }
 
 			window.render_entity(p, camera);
+
+			for (auto &e : currentMap.enemies) {
+				if ((*e).getPos().y >= p.getPos().y)
+					window.render_entity(*e, camera);
+				window.render_entity((*e).projectile, camera);
+			}
 
 			if (isFading == 2) window.fade(isFading, alpha);
 		}		

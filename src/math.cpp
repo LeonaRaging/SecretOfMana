@@ -24,3 +24,5 @@ pair<int,int> RelativePostion(vector2f a, vector2f b)
 
 	return {directionX, directionY};
 }
+
+mt19937 mt(chrono::steady_clock::now().time_since_epoch().count());

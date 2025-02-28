@@ -1,6 +1,5 @@
 #pragma once
 #include "entity.hpp"
-// #include "map.hpp"
 #include "RenderWindow.hpp"
 
 class enemy: public entity
@@ -12,6 +11,8 @@ public:
 	void resetHitState();
 	entity projectile;
 protected:
+	int directionX, directionY, direction, state, speed, order, timeLeft;
+	float lastUpdate;
 	bool hasBeenHit;
 	int hp;
 	SDL_Rect hitbox;
@@ -27,8 +28,6 @@ public:
 	SDL_Rect getLegRect();
 private:
 	bool isSpawn;
-	int directionX, directionY, direction, state, speed, order, timeLeft;
-	float lastUpdate;
 	// state = {idle, spinning, digging, hurting, dying}
 	vector<SDL_Rect> idle, spin[4], dig, die;
 	SDL_Rect hurt;
@@ -43,9 +42,21 @@ public:
 	void dying();
 	SDL_Rect getLegRect();
 private:
-	int directionX, directionY, direction, state, speed, order, timeLeft;
-	float lastUpdate;
 	// state = {idle, moving, summoning, casting, hurting, dying};
 	vector<SDL_Rect> idle, summon, cast, die, bolt;
 	SDL_Rect hurt;
+};
+
+class waterthug : public enemy
+{
+public:
+	waterthug(vector2f p_pos, RenderWindow &window);
+	void update(vector2f p_pos, vector<entity> &wall, float currentTime);
+	void hurting();
+	void dying();
+	SDL_Rect getLegRect();
+private:
+	// state = {idle, moving, throwing trident, circle attack, hurting, dying}
+	vector<SDL_Rect> idle[4], throwing[4], trident, circle, die;
+	SDL_Rect hurt; 
 };

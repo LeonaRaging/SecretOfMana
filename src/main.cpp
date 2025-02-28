@@ -97,6 +97,11 @@ int main(int argc, char* args[])
 				{
 					p_enemy->update(p.getPos(), currentMap.tiles, currentTime);
 				}
+
+				if (waterthug* p_enemy = dynamic_cast<waterthug*>(e))
+				{
+					p_enemy->update(p.getPos(), currentMap.tiles, currentTime);
+				}
 			}
 						
 			p.update(currentMap.tiles, currentMap.enemies, currentTime);

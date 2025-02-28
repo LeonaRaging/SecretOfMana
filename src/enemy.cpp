@@ -84,14 +84,13 @@ void pebbler::dying()
 }
 
 void pebbler::update(vector2f p_pos, vector<entity> &wall, float currentTime)
-{
+{	
 	if (timeLeft == 0)
 	{
 		if (Distance(pos, p_pos) > aggroRadius)
 		{
 			state = 0;
-			speed = 0;
-			timeLeft = 16;
+			timeLeft = 1;
 		}
 		else
 		{
@@ -111,7 +110,7 @@ void pebbler::update(vector2f p_pos, vector<entity> &wall, float currentTime)
 				timeLeft = 6;
 
 				tie(directionX, directionY) = RelativePostion(pos, p_pos);
-				direction = (rand() & 1 ? directionX : directionY);
+				direction = (mt() & 1 ? directionX : directionY);
 				if (directionY == 3) setFlip(SDL_FLIP_HORIZONTAL);
 				else setFlip(SDL_FLIP_NONE);
 			}
@@ -120,7 +119,6 @@ void pebbler::update(vector2f p_pos, vector<entity> &wall, float currentTime)
 	}
 
 	hitbox = SDL_Rect{0, 0, 0, 0};
-	cout << state << endl;
 	switch (state)
 	{
 		case 0:
@@ -184,7 +182,7 @@ void pebbler::update(vector2f p_pos, vector<entity> &wall, float currentTime)
 kimonobird::kimonobird(vector2f p_pos, RenderWindow &window)
 	:enemy(p_pos)
 {
-	direction = directionX = directionY = state = timeLeft = order = 0; speed = 1;
+	directionX = directionY = state = timeLeft = order = 0; speed = 1;
 	tex = window.loadTexture("res/image/enemy/kimonobird.png");
 
 	idle.emplace_back(SDL_Rect{0, 0, 96, 64});
@@ -282,8 +280,8 @@ void kimonobird::update(vector2f p_pos, vector<entity> &wall, float currentTime)
 			break;
 		case 4:
 			currentFrame = hurt; 
-
 			break;
+
 		case 5:
 			currentFrame = die[order];
 			break;
@@ -323,4 +321,169 @@ void kimonobird::update(vector2f p_pos, vector<entity> &wall, float currentTime)
 
 		lastUpdate = currentTime;
 	}
+}
+
+waterthug::waterthug(vector2f p_pos, RenderWindow &window)
+	:enemy(p_pos)
+{
+	direction = directionX = directionY = state = timeLeft = order = 0; speed = 1;
+	tex = window.loadTexture("res/image/enemy/waterthug.png");
+
+	idle[0].emplace_back(SDL_Rect{0, 64, 96, 64});
+	idle[1].emplace_back(SDL_Rect{0, 0, 96, 64});
+	idle[2].emplace_back(SDL_Rect{0, 128, 96, 64});
+	idle[3].emplace_back(SDL_Rect{0, 128, 96, 64});
+
+	throwing[0].emplace_back(SDL_Rect{0, 192, 96, 64});
+	throwing[1].emplace_back(SDL_Rect{0, 256, 96, 64});
+	throwing[2].emplace_back(SDL_Rect{0, 320, 96, 64});
+	throwing[3].emplace_back(SDL_Rect{0, 320, 96, 64});
+
+	trident.emplace_back(SDL_Rect{0, 384, 96, 64});
+
+	circle.emplace_back(SDL_Rect{0, 448, 96, 64});
+
+	hurt = SDL_Rect{0, 512, 96, 64};
+
+	die.emplace_back(SDL_Rect{0, 576, 96, 64});
+
+	for (int i = 0; i < 4; i++) {
+		CreateSprite(idle[i], 4);
+		CreateSprite(throwing[i], 2);
+	}
+
+	CreateSprite(trident, 4);
+	CreateSprite(circle, 4);
+	CreateSprite(die, 7);
+}
+
+SDL_Rect waterthug::getLegRect()
+{
+	SDL_Rect p_rect = getRect();
+	p_rect.x = p_rect.x - 4;
+	p_rect.w = 20;
+	p_rect.h = 6;
+	return p_rect;
+}
+
+void waterthug::hurting()
+{
+	state = 4;
+	timeLeft = 10;
+}
+
+void waterthug::dying()
+{
+	state = 5;
+	timeLeft = 7;
+	order = 0;
+}
+
+void waterthug::update(vector2f p_pos, vector<entity> &wall, float currentTime)
+{
+	if (timeLeft == 0)
+	{
+		tie(directionX, directionY) = RelativePostion(pos, p_pos);
+		direction = (abs(pos.x - p_pos.x) > abs(pos.y - p_pos.y) ? directionX : directionY);
+		if (direction == 3) setFlip(SDL_FLIP_HORIZONTAL);
+		else setFlip(SDL_FLIP_NONE);
+
+		if (Distance(pos, p_pos) > aggroRadius)
+		{
+			state = 0;
+			timeLeft = 6;
+		}
+		else
+		{
+			int value = mt() % 10;
+			order = 0;
+
+			if (value < 5)
+			{
+				state = 1;
+				timeLeft = 6;
+			}
+
+			else if (value < 9)
+			{
+				state = 2;
+				timeLeft = 2;
+			}
+
+			else
+			{
+				state = 3;
+				timeLeft = 8;
+			}
+		}
+	}
+
+	hitbox = SDL_Rect{0, 0, 0, 0};
+
+	switch (state)
+	{
+		case 0:
+			currentFrame = idle[direction][order];
+			hitbox = SDL_Rect{pos.x - 42 + 40, pos.y - 42 +28, 16, 18};
+			break;
+
+		case 1:
+			currentFrame = idle[direction][order];
+			moveX(directionX == 2 ? speed : -speed, getLegRect(), wall);
+			moveY(directionY ? speed : -speed, getLegRect(), wall);
+			break;
+
+		case 2:
+			if (order <= 1) currentFrame = throwing[direction][order];
+			else currentFrame = idle[direction][order % 4];
+			break;
+
+		case 3:
+			currentFrame = circle[order % 4];
+			break;
+
+		case 4:
+			currentFrame = hurt;
+			break;
+
+		case 5:
+			currentFrame = die[order];
+			break;
+	}
+
+	if (currentTime - lastUpdate > 150)
+	{
+		order++;
+		timeLeft--;
+
+		switch (state)
+		{
+			case 0:
+				order %= 4;
+				break;
+
+			case 1:
+				order %= 4;
+				if (timeLeft == 0) timeLeft = 12, state = 0;
+				break;
+
+			case 2:
+				if (timeLeft == 0)
+				{
+					projectile.setRect(SDL_Rect{0, 0, 0, 0});
+					timeLeft = 12;
+					state = 0, order = 0;
+				}
+
+			case 3:
+				break;
+
+			case 5:
+				if (timeLeft == 0)
+					pos = {0, 0};
+		}
+
+		lastUpdate = currentTime;
+	}
+
 }

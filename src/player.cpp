@@ -123,6 +123,11 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 						p_enemy->hurting();
 					}
 
+					if (waterthug* p_enemy = dynamic_cast<waterthug*>(enemies[index]))
+					{
+						p_enemy->hurting();
+					}
+
 				}
 				else if (current == 2) {
 
@@ -136,6 +141,10 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 						p_enemy->dying();
 					}
 
+					if (waterthug* p_enemy = dynamic_cast<waterthug*>(enemies[index]))
+					{
+						p_enemy->dying();
+					}
 				}
 			}
 		}

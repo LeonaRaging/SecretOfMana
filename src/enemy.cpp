@@ -4,18 +4,11 @@
 enemy::enemy(vector2f p_pos)
 	:entity(p_pos)
 {
-	hasBeenHit = false;
 	hp = 3;
-}
-
-void enemy::resetHitState()
-{
-	hasBeenHit = false;
 }
 
 int enemy::isHit(vector2f p_pos, SDL_Rect p_rect)
 {
-	if (hasBeenHit) return 0;
 
 	p_rect.x = p_pos.x - 42 + p_rect.x;
 	p_rect.y = p_pos.y - 42 + p_rect.y;
@@ -23,7 +16,6 @@ int enemy::isHit(vector2f p_pos, SDL_Rect p_rect)
 	if (SDL_HasIntersection(&p_rect, &hitbox))
 	{
 		hp--;
-		hasBeenHit = true;
 		if (hp <= 0) 
 		{
 			cout << "enemy died!" << endl;
@@ -119,27 +111,37 @@ void pebbler::update(vector2f p_pos, vector<entity> &wall, float currentTime)
 	}
 
 	hitbox = SDL_Rect{0, 0, 0, 0};
+
+	projectileHitbox.clear();
 	switch (state)
 	{
 		case 0:
 			currentFrame = idle[order];
 			hitbox = SDL_Rect{pos.x - 42 + 38, pos.y - 42 + 21, 20, 27};
 			break;
+
 		case 1:
 			currentFrame = spin[direction][order];
 
 			moveX(directionX == 2 ? speed : -speed, getLegRect(), wall);
 			moveY(directionY ? speed : -speed, getLegRect(), wall);
+			
+			projectileHitbox.emplace_back(SDL_Rect{pos.x - 42 + 38, pos.y - 42 + 25, 20, 20});
+			
 			break;
+
 		case 2:
 			currentFrame = dig[order];
 			break;
+
 		case 3:
 			currentFrame = hurt;
 			break;
+
 		case 4:
 			currentFrame = die[order];
 			break;
+
 	}
 
 	if (currentTime - lastUpdate > 150)
@@ -153,6 +155,7 @@ void pebbler::update(vector2f p_pos, vector<entity> &wall, float currentTime)
 				order %= 16;
 				break;
 			case 1:
+				
 				if (order == 3) 
 				{
 					order = 1;
@@ -236,7 +239,7 @@ void kimonobird::update(vector2f p_pos, vector<entity> &wall, float currentTime)
 			int value = mt() % 10;
 			order = 0;
 
-			if (value < 5)
+			if (value < 3)
 			{
 				state = 1;
 				timeLeft = 6;
@@ -289,6 +292,7 @@ void kimonobird::update(vector2f p_pos, vector<entity> &wall, float currentTime)
 
 	if (currentTime - lastUpdate > 150)
 	{
+		projectileHitbox.clear();
 		order++;
 		timeLeft--;
 
@@ -313,10 +317,14 @@ void kimonobird::update(vector2f p_pos, vector<entity> &wall, float currentTime)
 
 				if (timeLeft == 0) projectile.setRect(SDL_Rect{0, 0, 0, 0}), timeLeft = 12, state = 0, order = 0;
 
+				if (order >= 6 && order <= 7)
+					projectileHitbox.emplace_back(SDL_Rect{projectile.getPos().x, projectile.getPos().y + 48, 12, 12});
+
 				break;
 			case 5:
 				if (timeLeft == 0)
 					pos = {0, 0};
+				break;
 		}
 
 		lastUpdate = currentTime;
@@ -334,8 +342,8 @@ waterthug::waterthug(vector2f p_pos, RenderWindow &window)
 	idle[2].emplace_back(SDL_Rect{0, 128, 96, 64});
 	idle[3].emplace_back(SDL_Rect{0, 128, 96, 64});
 
-	throwing[0].emplace_back(SDL_Rect{0, 192, 96, 64});
-	throwing[1].emplace_back(SDL_Rect{0, 256, 96, 64});
+	throwing[0].emplace_back(SDL_Rect{0, 256, 96, 64});
+	throwing[1].emplace_back(SDL_Rect{0, 192, 96, 64});
 	throwing[2].emplace_back(SDL_Rect{0, 320, 96, 64});
 	throwing[3].emplace_back(SDL_Rect{0, 320, 96, 64});
 
@@ -401,10 +409,10 @@ void waterthug::update(vector2f p_pos, vector<entity> &wall, float currentTime)
 			if (value < 5)
 			{
 				state = 1;
-				timeLeft = 6;
+				timeLeft = 3;
 			}
 
-			else if (value < 9)
+			else if (value < 7)
 			{
 				state = 2;
 				timeLeft = 2;
@@ -451,10 +459,13 @@ void waterthug::update(vector2f p_pos, vector<entity> &wall, float currentTime)
 			break;
 	}
 
-	if (currentTime - lastUpdate > 150)
+	if (currentTime - lastUpdate > 1000)
 	{
+		projectileHitbox.clear();
 		order++;
 		timeLeft--;
+
+		SDL_Rect p_rect;
 
 		switch (state)
 		{
@@ -468,19 +479,30 @@ void waterthug::update(vector2f p_pos, vector<entity> &wall, float currentTime)
 				break;
 
 			case 2:
-				if (timeLeft == 0)
+
+				if (order == 1)
 				{
-					projectile.setRect(SDL_Rect{0, 0, 0, 0});
-					timeLeft = 12;
-					state = 0, order = 0;
+					p_rect = getLegRect();
+					if (direction == 0) projectileHitbox.emplace_back(SDL_Rect{p_rect.x + 12, p_rect.y - 22, 12, 22});
+					if (direction == 1) projectileHitbox.emplace_back(SDL_Rect{p_rect.x, p_rect.y, 12, 22});
+					if (direction == 2) projectileHitbox.emplace_back(SDL_Rect{p_rect.x + 22, p_rect.y - 12, 22, 12});
+					if (direction == 3) projectileHitbox.emplace_back(SDL_Rect{p_rect.x - 22, p_rect.y - 12, 22, 12});
 				}
 
-			case 3:
 				break;
 
-			case 5:
+			case 3:
+				p_rect = getLegRect();
+				if (order % 4 == 0) projectileHitbox.emplace_back(SDL_Rect{p_rect.x, p_rect.y, 12, 22});
+				if (order % 4 == 1) projectileHitbox.emplace_back(SDL_Rect{p_rect.x + 22, p_rect.y - 12, 22, 12});
+				if (order % 4 == 2) projectileHitbox.emplace_back(SDL_Rect{p_rect.x, p_rect.y - 22, 12, 22});
+				if (order % 4 == 3) projectileHitbox.emplace_back(SDL_Rect{p_rect.x - 22, p_rect.y - 12, 22, 12});
+				break;
+
+			case 5:	
 				if (timeLeft == 0)
 					pos = {0, 0};
+				break;
 		}
 
 		lastUpdate = currentTime;

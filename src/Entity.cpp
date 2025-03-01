@@ -63,7 +63,7 @@ bool isCollision(SDL_Rect a, vector<entity>& b)
 	{
 		SDL_Rect cur = b[j].getRect();
 		if (SDL_HasIntersection(&a, &cur) == SDL_TRUE) {
-			std::cout << "wall hit" << endl;
+			// std::cout << "wall hit" << endl;
 			return true;
 		}
 	}

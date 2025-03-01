@@ -19,7 +19,6 @@ int main(int argc, char* args[])
 
 	if (!(IMG_Init(IMG_INIT_PNG)))
 		cout << "IMG_Init has failed, Error: " << SDL_GetError() << endl;
-
 	RenderWindow window("GAME");
 
 	bool gameRunning = true, pause = false;
@@ -114,8 +113,6 @@ int main(int argc, char* args[])
 					window.render_map(p_entity, camera);
 				}
 
-			// system("pause");
-
 			// for (entity &e: currentMap.tiles)
 				// window.render(e, camera);
 
@@ -123,7 +120,7 @@ int main(int argc, char* args[])
 				if ((*e).getPos().y < p.getPos().y)
 					window.render_entity(*e, camera);
 
-			// SDL_Texture* rectTexture = window.loadTexture("res/image/enemy.png");
+			SDL_Texture* rectTexture = window.loadTexture("res/image/rect.png");
 			// for (enemy *e : currentMap.enemies) {
 			// 	entity p_entity = entity(dynamic_cast<pebbler*>(e)->getPos(), rectTexture, dynamic_cast<pebbler*>(e)->getLegRect());
 			// 	window.render_map(p_entity, camera);
@@ -136,6 +133,12 @@ int main(int argc, char* args[])
 				if ((*e).getPos().y >= p.getPos().y)
 					window.render_entity(*e, camera);
 				window.render_entity((*e).projectile, camera);
+
+				for (SDL_Rect p_rect : e->projectileHitbox)
+				{
+					entity p_entity(vector2f(p_rect.x, p_rect.y), rectTexture, 0, 0, p_rect.w, p_rect.h);
+					window.render_map(p_entity, camera);
+				}
 			}
 
 			if (isFading == 2) window.fade(isFading, alpha);
@@ -149,7 +152,7 @@ int main(int argc, char* args[])
 		if (Perf == 0) Perf = 1;
 		float elapsedMS = (End - Start) / (float)Perf * 1000.0f;
 
-		// SDL_Delay(floor(16.666f - elapsedMS));
+		if (elapsedMS < 16.666f) SDL_Delay(floor(16.666f - elapsedMS));
 		// cout << elapsedMS << endl;
 	}
 

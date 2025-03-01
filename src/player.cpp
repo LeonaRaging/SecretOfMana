@@ -3,7 +3,7 @@
 player::player(vector2f p_pos, RenderWindow &window)
 	:entity(p_pos, NULL)
 {
-	speed = 1; order = 0; lastUpdate = 0; direction = 0; state = 0;
+	hp = 100; speed = 1; order = 0; lastUpdate = 0; direction = 0; state = 0; timeLeft = 0;
 
 	movingTexture = window.loadTexture("res/image/player/moving.png");
 	attackTexture = window.loadTexture("res/image/player/attack.png");
@@ -59,8 +59,6 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 		{
 			timeLeft = 5;
 			order = 0;
-			for (auto &p_enemy : enemies)
-				p_enemy->resetHitState();
 			state = 2;
 		}
 
@@ -102,75 +100,109 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 		}
 	}
 
-	if (state == 2)
+	hitbox = SDL_Rect{pos.x, pos.y - 26, 12, 32};
+
+	// cout << hp << endl;
+
+	if (state != 3)
 	{
-		tex = attackTexture;
-		currentFrame = attack[direction][order];
-		if (order == 2)
+		for (int index = 0; index < (int)enemies.size(); index++)
 		{
-			for (int index = 0; index < (int)enemies.size(); index++)
-			{	
-				int current = enemies[index]->isHit(pos, attackHitbox[direction]);
-				if (current == 1) {
-
-					if (kimonobird* p_enemy = dynamic_cast<kimonobird*>(enemies[index]))
-					{
-						p_enemy->hurting();
-					}
-
-					if (pebbler* p_enemy = dynamic_cast<pebbler*>(enemies[index]))
-					{
-						p_enemy->hurting();
-					}
-
-					if (waterthug* p_enemy = dynamic_cast<waterthug*>(enemies[index]))
-					{
-						p_enemy->hurting();
-					}
-
-				}
-				else if (current == 2) {
-
-					if (kimonobird* p_enemy = dynamic_cast<kimonobird*>(enemies[index]))
-					{
-						p_enemy->dying();
-					}
-
-					if (pebbler* p_enemy = dynamic_cast<pebbler*>(enemies[index]))
-					{
-						p_enemy->dying();
-					}
-
-					if (waterthug* p_enemy = dynamic_cast<waterthug*>(enemies[index]))
-					{
-						p_enemy->dying();
-					}
+			for (SDL_Rect p_rect : enemies[index]->projectileHitbox)
+			{
+				if (SDL_HasIntersection(&hitbox, &p_rect))
+				{
+					state = 3;
+					timeLeft = 5;
+					hp -= 10;
 				}
 			}
 		}
 	}
 
-	if (state == 1) 
+	switch (state)
 	{
-		tex = movingTexture;
-		currentFrame = sprites[direction][order];
-	}
+		case 0:
+			tex = movingTexture;
+			currentFrame = stance[direction];
+			break;
 
-	if (state == 0)
-	{
-		tex = movingTexture;
-		currentFrame = stance[direction];
+		case 1:
+			tex = movingTexture;
+			currentFrame = sprites[direction][order];
+			break;
+
+		case 2:
+			tex = attackTexture;
+			currentFrame = attack[direction][order];
+			break;
 	}
 
 	if (currentTime - lastUpdate > 100)
 	{
 		order++;
-		if (state == 2) {
+		
+		switch (state) {
+			case 0:
+				order %= 6;
+				break;
 
-			timeLeft--;
-			order %= 5;
+			case 1:
+				order %= 6;
+				break;
+
+			case 2:
+				timeLeft--;
+				order %= 5;
+
+				if (order == 2)
+				{
+					for (int index = 0; index < (int)enemies.size(); index++)
+					{	
+						int current = enemies[index]->isHit(pos, attackHitbox[direction]);
+						if (current == 1) {
+
+							if (kimonobird* p_enemy = dynamic_cast<kimonobird*>(enemies[index]))
+							{
+								p_enemy->hurting();
+							}
+
+							if (pebbler* p_enemy = dynamic_cast<pebbler*>(enemies[index]))
+							{
+								p_enemy->hurting();
+							}
+
+							if (waterthug* p_enemy = dynamic_cast<waterthug*>(enemies[index]))
+							{
+								p_enemy->hurting();
+							}
+
+						}
+						else if (current == 2) {
+
+							if (kimonobird* p_enemy = dynamic_cast<kimonobird*>(enemies[index]))
+							{
+								p_enemy->dying();
+							}
+
+							if (pebbler* p_enemy = dynamic_cast<pebbler*>(enemies[index]))
+							{
+								p_enemy->dying();
+							}
+
+							if (waterthug* p_enemy = dynamic_cast<waterthug*>(enemies[index]))
+							{
+								p_enemy->dying();
+							}
+						}
+					}
+				}
+				break;
+
+			case 3:
+				timeLeft--;
+				break;
 		}
-		else order %= 6;
 		lastUpdate = currentTime;
 
 	}

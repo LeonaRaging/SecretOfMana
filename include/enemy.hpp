@@ -8,12 +8,11 @@ public:
 	virtual ~enemy() = default;
 	enemy(vector2f p_pos);
 	int isHit(vector2f p_pos, SDL_Rect p_rect);
-	void resetHitState();
 	entity projectile;
+	vector<SDL_Rect> projectileHitbox;
 protected:
 	int directionX, directionY, direction, state, speed, order, timeLeft;
 	float lastUpdate;
-	bool hasBeenHit;
 	int hp;
 	SDL_Rect hitbox;
 };

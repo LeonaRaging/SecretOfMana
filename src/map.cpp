@@ -127,7 +127,7 @@ map dragon_cave_2(RenderWindow &window)
 	p_map.portals.emplace_back(SDL_Rect{ 272, 572, 32, 4 }, 1, vector2f(251, 495 ));
 	p_map.portals.emplace_back(SDL_Rect{ 160, 380, 32, 4 }, 1, vector2f(107, 352));
 
-	p_map.enemies.emplace_back(new waterthug(vector2f(128, 500), window));
+	p_map.enemies.emplace_back(new pebbler(vector2f(128, 500), window));
 
 	p_map.index = 2;
 	return p_map;

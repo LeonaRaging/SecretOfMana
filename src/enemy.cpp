@@ -33,6 +33,7 @@ pebbler::pebbler(vector2f p_pos, RenderWindow &window):
 	enemy(p_pos)
 {
 	direction = directionX = directionY = state = timeLeft = order = 0; speed = 1;
+	hitbox = SDL_Rect{pos.x - 42 + 38, pos.y - 42 + 21, 20, 27};
 	isSpawn = false;
 	tex = window.loadTexture("res/image/enemy/pebbler.png");
 
@@ -75,11 +76,11 @@ void pebbler::dying()
 	state = 4;
 }
 
-void pebbler::update(vector2f p_pos, vector<entity> &wall, float currentTime)
+void pebbler::update(SDL_Rect p_rect, vector<entity> &wall, float currentTime)
 {	
 	if (timeLeft == 0)
 	{
-		if (Distance(pos, p_pos) > aggroRadius)
+		if (Distance(pos, vector2f(p_rect.x, p_rect.y)) > aggroRadius)
 		{
 			state = 0;
 			timeLeft = 1;
@@ -100,11 +101,16 @@ void pebbler::update(vector2f p_pos, vector<entity> &wall, float currentTime)
 				state = 1;
 				speed = 2;
 				timeLeft = 6;
+				hitbox = SDL_Rect{pos.x - 42 + 38, pos.y - 42 + 21, 20, 27};
 
-				tie(directionX, directionY) = RelativePostion(pos, p_pos);
-				direction = (mt() & 1 ? directionX : directionY);
-				if (directionY == 3) setFlip(SDL_FLIP_HORIZONTAL);
+				tie(directionX, directionY) = RelativePostion(hitbox, p_rect);
+				
+				if (directionX == -1 && directionY != -1) direction = directionY;
+				if (directionX != -1 && directionY == -1) direction = directionX;
+
+				if (direction == 3) setFlip(SDL_FLIP_HORIZONTAL);
 				else setFlip(SDL_FLIP_NONE);
+
 			}
 		}
 
@@ -123,8 +129,8 @@ void pebbler::update(vector2f p_pos, vector<entity> &wall, float currentTime)
 		case 1:
 			currentFrame = spin[direction][order];
 
-			moveX(directionX == 2 ? speed : -speed, getLegRect(), wall);
-			moveY(directionY ? speed : -speed, getLegRect(), wall);
+			if (directionX != -1) moveX(directionX == 2 ? speed : -speed, getLegRect(), wall);
+			if (directionY != -1) moveY(directionY ? speed : -speed, getLegRect(), wall);
 			
 			projectileHitbox.emplace_back(SDL_Rect{pos.x - 42 + 38, pos.y - 42 + 25, 20, 20});
 			
@@ -186,6 +192,7 @@ kimonobird::kimonobird(vector2f p_pos, RenderWindow &window)
 	:enemy(p_pos)
 {
 	directionX = directionY = state = timeLeft = order = 0; speed = 1;
+	hitbox = SDL_Rect{pos.x - 42 + 40, pos.y - 42 + 14, 16, 34};
 	tex = window.loadTexture("res/image/enemy/kimonobird.png");
 
 	idle.emplace_back(SDL_Rect{0, 0, 96, 64});
@@ -225,11 +232,11 @@ void kimonobird::dying()
 	order = 0;
 }
 
-void kimonobird::update(vector2f p_pos, vector<entity> &wall, float currentTime)
+void kimonobird::update(SDL_Rect p_rect, vector<entity> &wall, float currentTime)
 {
 	if (timeLeft == 0)
 	{
-		if (Distance(pos, p_pos) > aggroRadius)
+		if (Distance(pos, vector2f(p_rect.x, p_rect.y)) > aggroRadius)
 		{
 			state = 0;
 			timeLeft = 6;
@@ -244,7 +251,7 @@ void kimonobird::update(vector2f p_pos, vector<entity> &wall, float currentTime)
 				state = 1;
 				timeLeft = 6;
 
-				tie(directionX, directionY) = RelativePostion(pos, p_pos);
+				tie(directionX, directionY) = RelativePostion(hitbox, p_rect);
 			}
 
 			else if (value < 0)
@@ -272,8 +279,8 @@ void kimonobird::update(vector2f p_pos, vector<entity> &wall, float currentTime)
 			break;
 		case 1:
 			currentFrame = idle[order];
-			moveX(directionX == 2 ? speed : -speed, getLegRect(), wall);
-			moveY(directionY ? speed : -speed, getLegRect(), wall);
+			if (directionX != -1) moveX(directionX == 2 ? speed : -speed, getLegRect(), wall);
+			if (directionY != -1) moveY(directionY ? speed : -speed, getLegRect(), wall);
 			
 			break;
 		case 3:
@@ -310,7 +317,7 @@ void kimonobird::update(vector2f p_pos, vector<entity> &wall, float currentTime)
 			case 3:
 				if (order == 4)
 				{
-					projectile = entity(vector2f(p_pos.x, p_pos.y - 64), tex, bolt[0]);
+					projectile = entity(vector2f(p_rect.x, p_rect.y - 64), tex, bolt[0]);
 				}
 				else if (order > 4)
 					projectile.setRect(bolt[order - 4]);
@@ -318,7 +325,7 @@ void kimonobird::update(vector2f p_pos, vector<entity> &wall, float currentTime)
 				if (timeLeft == 0) projectile.setRect(SDL_Rect{0, 0, 0, 0}), timeLeft = 12, state = 0, order = 0;
 
 				if (order >= 6 && order <= 7)
-					projectileHitbox.emplace_back(SDL_Rect{projectile.getPos().x, projectile.getPos().y + 48, 12, 12});
+					projectileHitbox.emplace_back(SDL_Rect{projectile.getPos().x, projectile.getPos().y + 64, 12, 12});
 
 				break;
 			case 5:
@@ -335,6 +342,7 @@ waterthug::waterthug(vector2f p_pos, RenderWindow &window)
 	:enemy(p_pos)
 {
 	direction = directionX = directionY = state = timeLeft = order = 0; speed = 1;
+	hitbox = SDL_Rect{pos.x - 42 + 40, pos.y - 42 + 28, 16, 18};
 	tex = window.loadTexture("res/image/enemy/waterthug.png");
 
 	idle[0].emplace_back(SDL_Rect{0, 64, 96, 64});
@@ -387,16 +395,20 @@ void waterthug::dying()
 	order = 0;
 }
 
-void waterthug::update(vector2f p_pos, vector<entity> &wall, float currentTime)
+void waterthug::update(SDL_Rect p_rect, vector<entity> &wall, float currentTime)
 {
 	if (timeLeft == 0)
 	{
-		tie(directionX, directionY) = RelativePostion(pos, p_pos);
-		direction = (abs(pos.x - p_pos.x) > abs(pos.y - p_pos.y) ? directionX : directionY);
+		tie(directionX, directionY) = RelativePostion(hitbox, p_rect);
+
+		if (directionX != -1 && directionY == -1) direction = directionX;
+		if (directionX == -1 && directionY != -1) direction = directionY;
+		if (directionX != -1 && directionY != -1) direction = (mt() & 1 ? directionX : directionY);
+
 		if (direction == 3) setFlip(SDL_FLIP_HORIZONTAL);
 		else setFlip(SDL_FLIP_NONE);
 
-		if (Distance(pos, p_pos) > aggroRadius)
+		if (Distance(pos, vector2f(p_rect.x, p_rect.y)) > aggroRadius)
 		{
 			state = 0;
 			timeLeft = 6;
@@ -421,7 +433,7 @@ void waterthug::update(vector2f p_pos, vector<entity> &wall, float currentTime)
 			else
 			{
 				state = 3;
-				timeLeft = 8;
+				timeLeft = 4;
 			}
 		}
 	}
@@ -432,13 +444,13 @@ void waterthug::update(vector2f p_pos, vector<entity> &wall, float currentTime)
 	{
 		case 0:
 			currentFrame = idle[direction][order];
-			hitbox = SDL_Rect{pos.x - 42 + 40, pos.y - 42 +28, 16, 18};
+			hitbox = SDL_Rect{pos.x - 42 + 40, pos.y - 42 + 28, 16, 18};
 			break;
 
 		case 1:
 			currentFrame = idle[direction][order];
-			moveX(directionX == 2 ? speed : -speed, getLegRect(), wall);
-			moveY(directionY ? speed : -speed, getLegRect(), wall);
+			if (directionX != -1) moveX(directionX == 2 ? speed : -speed, getLegRect(), wall);
+			if (directionY != -1) moveY(directionY ? speed : -speed, getLegRect(), wall);
 			break;
 
 		case 2:
@@ -459,7 +471,7 @@ void waterthug::update(vector2f p_pos, vector<entity> &wall, float currentTime)
 			break;
 	}
 
-	if (currentTime - lastUpdate > 1000)
+	if (currentTime - lastUpdate > 200)
 	{
 		projectileHitbox.clear();
 		order++;

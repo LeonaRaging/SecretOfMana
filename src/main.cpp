@@ -89,17 +89,17 @@ int main(int argc, char* args[])
 			for (enemy *e : currentMap.enemies) {
 				if (kimonobird* p_enemy = dynamic_cast<kimonobird*>(e))
 				{
-					p_enemy->update(p.getPos(), currentMap.tiles, currentTime);
+					p_enemy->update(p.getHitbox(), currentMap.tiles, currentTime);
 				}
 
 				if (pebbler* p_enemy = dynamic_cast<pebbler*>(e))
 				{
-					p_enemy->update(p.getPos(), currentMap.tiles, currentTime);
+					p_enemy->update(p.getHitbox(), currentMap.tiles, currentTime);
 				}
 
 				if (waterthug* p_enemy = dynamic_cast<waterthug*>(e))
 				{
-					p_enemy->update(p.getPos(), currentMap.tiles, currentTime);
+					p_enemy->update(p.getHitbox(), currentMap.tiles, currentTime);
 				}
 			}
 						
@@ -128,18 +128,22 @@ int main(int argc, char* args[])
 			// }
 
 			window.render_entity(p, camera);
+			// entity p_entity(vector2f(p.getHitbox().x, p.getHitbox().y), rectTexture, 0, 0, p.getHitbox().w, p.getHitbox().h);
+			// window.render_map(p_entity, camera);
 
 			for (auto &e : currentMap.enemies) {
 				if ((*e).getPos().y >= p.getPos().y)
 					window.render_entity(*e, camera);
 				window.render_entity((*e).projectile, camera);
 
-				for (SDL_Rect p_rect : e->projectileHitbox)
-				{
-					entity p_entity(vector2f(p_rect.x, p_rect.y), rectTexture, 0, 0, p_rect.w, p_rect.h);
-					window.render_map(p_entity, camera);
-				}
+				// for (SDL_Rect p_rect : e->projectileHitbox)
+				// {
+				// 	entity p_entity(vector2f(p_rect.x, p_rect.y), rectTexture, 0, 0, p_rect.w, p_rect.h);
+				// 	window.render_map(p_entity, camera);
+				// }
 			}
+
+
 
 			if (isFading == 2) window.fade(isFading, alpha);
 		}		

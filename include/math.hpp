@@ -9,6 +9,7 @@
 #include <random>
 #include <utility>
 #include <chrono>
+#include <iomanip>
 
 using namespace std;
 
@@ -22,7 +23,7 @@ const int aggroRadius = 150;
 
 struct vector2f 
 {
-	vector2f(int p_x = 0, int p_y = 0):
+	vector2f(float p_x = 0.0f, float p_y = 0.0f):
 		x(p_x), y(p_y) {}
 	int x, y; 
 };
@@ -31,6 +32,10 @@ void CreateSprite(vector<SDL_Rect> &sprites, int size);
 
 float Distance(vector2f a, vector2f b);
 
-pair<int,int> RelativePostion(vector2f a, vector2f b);
+pair<int,int> RelativePostion(SDL_Rect a, SDL_Rect b);
 
 extern mt19937 mt;
+
+int Reverse(int direction);
+
+int areaIntersection(SDL_Rect a, SDL_Rect b);

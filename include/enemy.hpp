@@ -21,7 +21,7 @@ class pebbler : public enemy
 {
 public:
 	pebbler(vector2f p_pos, RenderWindow &window);
-	void update(vector2f p_pos, vector<entity> &wall, float currentTime);
+	void update(SDL_Rect p_rect, vector<entity> &wall, float currentTime);
 	void hurting();
 	void dying();
 	SDL_Rect getLegRect();
@@ -36,7 +36,7 @@ class kimonobird : public enemy
 {
 public:
 	kimonobird(vector2f p_pos, RenderWindow &window);
-	void update(vector2f p_pos, vector<entity> &wall, float currentTime);
+	void update(SDL_Rect p_rect, vector<entity> &wall, float currentTime);
 	void hurting();
 	void dying();
 	SDL_Rect getLegRect();
@@ -50,7 +50,7 @@ class waterthug : public enemy
 {
 public:
 	waterthug(vector2f p_pos, RenderWindow &window);
-	void update(vector2f p_pos, vector<entity> &wall, float currentTime);
+	void update(SDL_Rect p_rect, vector<entity> &wall, float currentTime);
 	void hurting();
 	void dying();
 	SDL_Rect getLegRect();

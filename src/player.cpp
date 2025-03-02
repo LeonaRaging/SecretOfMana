@@ -4,6 +4,7 @@ player::player(vector2f p_pos, RenderWindow &window)
 	:entity(p_pos, NULL)
 {
 	hp = 100; speed = 1; order = 0; lastUpdate = 0; direction = 0; state = 0; timeLeft = 0;
+	hitbox = SDL_Rect{pos.x, pos.y - 26, 12, 32};
 
 	movingTexture = window.loadTexture("res/image/player/moving.png");
 	attackTexture = window.loadTexture("res/image/player/attack.png");
@@ -33,6 +34,14 @@ player::player(vector2f p_pos, RenderWindow &window)
 	attackHitbox[1] = SDL_Rect{ 16, 32, 48, 32};
 	attackHitbox[2] = SDL_Rect{ 16, 16, 32, 32};
 	attackHitbox[3] = SDL_Rect{ 48, 16, 32, 32};
+
+	hurt[0].emplace_back(SDL_Rect{ 0, 384, 96, 64});
+	hurt[1].emplace_back(SDL_Rect{ 0, 320, 96, 64});
+	hurt[2].emplace_back(SDL_Rect{ 0, 256, 96, 64});
+	hurt[3].emplace_back(SDL_Rect{ 0, 256, 96, 64});
+
+	for (int i = 0; i < 4; i++)
+		CreateSprite(hurt[i], 7);
 }
 
 SDL_Rect player::getLegRect() 
@@ -42,6 +51,11 @@ SDL_Rect player::getLegRect()
 	p_rect.h = 6;
 
 	return p_rect;
+}
+
+SDL_Rect player::getHitbox()
+{
+	return hitbox;
 }
 
 void player::setPos(vector2f p_pos)
@@ -57,8 +71,8 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 	{
 		if (keys[SDL_SCANCODE_J])
 		{
-			timeLeft = 5;
 			order = 0;
+			timeLeft = 5;
 			state = 2;
 		}
 
@@ -108,15 +122,45 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 	{
 		for (int index = 0; index < (int)enemies.size(); index++)
 		{
+			bool hasbeenHit = false;
 			for (SDL_Rect p_rect : enemies[index]->projectileHitbox)
 			{
 				if (SDL_HasIntersection(&hitbox, &p_rect))
 				{
 					state = 3;
-					timeLeft = 5;
+					timeLeft = 12;
 					hp -= 10;
+					hasbeenHit = true;
+					order = 0;
+
+					SDL_Rect rect;
+					int best = 0;
+
+					rect = SDL_Rect{hitbox.x, hitbox.y, hitbox.w, hitbox.h / 2};
+					if (areaIntersection(rect, p_rect) > best) direction = 0, best = areaIntersection(rect, p_rect);
+					// cout << areaIntersection(rect, p_rect) << endl;
+
+					rect = SDL_Rect{hitbox.x, hitbox.y + hitbox.h / 2, hitbox.w, hitbox.h / 2};
+					if (areaIntersection(rect, p_rect) > best) direction = 1, best = areaIntersection(rect, p_rect);
+					// cout << areaIntersection(rect, p_rect) << endl;
+
+					rect = SDL_Rect{hitbox.x, hitbox.y, hitbox.w / 2, hitbox.h};
+					if (areaIntersection(rect, p_rect) > best) direction = 3, best = areaIntersection(rect, p_rect);
+					// cout << areaIntersection(rect, p_rect) << endl;
+
+					rect = SDL_Rect{hitbox.x + hitbox.w / 2, hitbox.y, hitbox.w / 2, hitbox.h};
+					if (areaIntersection(rect, p_rect) > best) direction = 2, best = areaIntersection(rect, p_rect);
+					// cout << areaIntersection(rect, p_rect) << endl;
+					// cout << endl;
+					if (direction == 3) setFlip(SDL_FLIP_HORIZONTAL);
+					else setFlip(SDL_FLIP_NONE);
+
+					cout << direction << endl << endl;
+					break;
 				}
 			}
+
+			if (hasbeenHit) break;
 		}
 	}
 
@@ -136,9 +180,21 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 			tex = attackTexture;
 			currentFrame = attack[direction][order];
 			break;
+
+		case 3:
+			tex = movingTexture;
+			order = min(order, 6);
+			currentFrame = hurt[direction][order];
+			if (order < 3) speed = 2;
+			else if (order < 5) speed = 1;
+			else speed = 0;
+			if (direction <= 1) moveY((direction ? -1 : 1) * speed, getLegRect(), wall);
+			else moveX((direction == 2 ? -1 : 1) * speed, getLegRect(), wall);
+			speed = 1;
+			break;
 	}
 
-	if (currentTime - lastUpdate > 100)
+	if (currentTime - lastUpdate > 150)
 	{
 		order++;
 		
@@ -201,6 +257,7 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 
 			case 3:
 				timeLeft--;
+				if (timeLeft == 0) order = 0;
 				break;
 		}
 		lastUpdate = currentTime;

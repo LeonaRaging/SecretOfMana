@@ -7,7 +7,7 @@ class enemy: public entity
 public:
 	virtual ~enemy() = default;
 	enemy(vector2f p_pos);
-	int isHit(vector2f p_pos, SDL_Rect p_rect);
+	int isHit(vector2f p_pos, SDL_Rect p_rect, vector<numberDisplay> &number);
 	entity projectile;
 	vector<SDL_Rect> projectileHitbox;
 protected:

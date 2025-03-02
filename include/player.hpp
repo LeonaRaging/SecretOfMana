@@ -10,9 +10,10 @@ public:
 	player(vector2f p_pos, RenderWindow &window);
 	SDL_Rect getLegRect();
 	SDL_Rect getHitbox();
+	int getHp();
 	void setPos(vector2f p_pos);
-	void update(vector<entity> &wall, vector<enemy*> &enemies, float currentTime);
-	void update_camera(SDL_Rect &camera);
+	void update(vector<entity> &wall, vector<enemy*> &enemies, float currentTime, vector<numberDisplay> &number);
+	void update_camera();
 private:
 	int hp, direction, speed, order, timeLeft, state;
 	// state = {idle, moving, attacking, hurting, dying}

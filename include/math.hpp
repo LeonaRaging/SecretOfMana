@@ -10,6 +10,7 @@
 #include <utility>
 #include <chrono>
 #include <iomanip>
+#include <algorithm>
 
 using namespace std;
 
@@ -23,9 +24,23 @@ const int aggroRadius = 150;
 
 struct vector2f 
 {
-	vector2f(float p_x = 0.0f, float p_y = 0.0f):
-		x(p_x), y(p_y) {}
 	int x, y; 
+	vector2f(int p_x = 0.0f, int p_y = 0.0f):
+		x(p_x), y(p_y) {}
+};
+
+struct numberDisplay
+{
+	int value, timeLeft;
+	vector2f pos;
+	float lastUpdate;
+
+	numberDisplay(int value = 0, vector2f pos = {0, 0}):
+		value(value), pos(pos)
+	{
+		timeLeft = 10;
+		lastUpdate = 0;
+	}
 };
 
 void CreateSprite(vector<SDL_Rect> &sprites, int size);
@@ -35,6 +50,7 @@ float Distance(vector2f a, vector2f b);
 pair<int,int> RelativePostion(SDL_Rect a, SDL_Rect b);
 
 extern mt19937 mt;
+extern SDL_Rect camera;
 
 int Reverse(int direction);
 

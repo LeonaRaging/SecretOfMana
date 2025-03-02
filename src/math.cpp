@@ -36,6 +36,8 @@ pair<int,int> RelativePostion(SDL_Rect a, SDL_Rect b)
 
 mt19937 mt(chrono::steady_clock::now().time_since_epoch().count());
 
+SDL_Rect camera;
+
 int areaIntersection(SDL_Rect a, SDL_Rect b)
 {
 	// cout << a.x << ' ' << a.y << ' ' << a.w << ' ' << a.h << endl;

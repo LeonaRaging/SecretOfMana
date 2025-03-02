@@ -70,16 +70,15 @@ bool isCollision(SDL_Rect a, vector<entity>& b)
 	return false;
 }
 
-void entity::moveX(float p_speed, SDL_Rect p_rect, vector<entity> &wall)
+void entity::moveX(int p_speed, SDL_Rect p_rect, vector<entity> &wall)
 {
 
 	pos.x += p_speed; p_rect.x += p_speed;
-	clog << fixed << setprecision(2) << pos.x << ' ' << p_speed << endl;
 	if (isCollision(p_rect, wall))
 		pos.x -= p_speed;
 }
 
-void entity::moveY(float p_speed, SDL_Rect p_rect, vector<entity> &wall) 
+void entity::moveY(int p_speed, SDL_Rect p_rect, vector<entity> &wall) 
 {
 	pos.y += p_speed; p_rect.y += p_speed;
 

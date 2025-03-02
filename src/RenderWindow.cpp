@@ -42,7 +42,7 @@ void RenderWindow::display()
 	SDL_RenderPresent(renderer);
 }
 
-void RenderWindow::render_map(entity &p_entity, SDL_Rect &camera)
+void RenderWindow::render_map(entity &p_entity)
 {
 	SDL_Rect src;
 	src.x = p_entity.getCurrentFrame().x;
@@ -59,7 +59,7 @@ void RenderWindow::render_map(entity &p_entity, SDL_Rect &camera)
 	SDL_RenderCopy(renderer, p_entity.getTex(), &src, &dst);
 }
 
-void RenderWindow::render_entity(entity &p_entity, SDL_Rect &camera)
+void RenderWindow::render_entity(entity &p_entity)
 {
 	SDL_Rect src;
 	src.x = p_entity.getCurrentFrame().x;
@@ -74,6 +74,37 @@ void RenderWindow::render_entity(entity &p_entity, SDL_Rect &camera)
 	dst.h = p_entity.getCurrentFrame().h;
 
 	SDL_RenderCopyEx(renderer, p_entity.getTex(), &src, &dst, 0, NULL, p_entity.getFlip());
+}
+
+void RenderWindow::fontInit()
+{
+	for (int i = 0; i < 10; i++)
+	{
+		numRect[i] = SDL_Rect{8 * i, 0, 8, 8};
+		playerRect[i] = SDL_Rect{8 * i, 8, 8, 8};
+	}
+	fontTexture = loadTexture("res/image/font/font.png");
+}
+
+void RenderWindow::render_font(int number, vector2f p_pos, bool isPlayer)
+{
+	// cout << number << ' ' << p_pos.x << ' ' << p_pos.y << endl;
+	vector<int> p_vector;
+
+	while (number > 0)
+	{
+		p_vector.push_back(number % 10);
+		number /= 10;
+	}
+
+	reverse(p_vector.begin(), p_vector.end());
+
+	for (int index = 0; index < (int)p_vector.size(); index++)
+	{
+		entity p_entity(vector2f(p_pos.x + index * 8, p_pos.y), fontTexture, numRect[p_vector[index]]);
+		if (isPlayer) p_entity.setRect(playerRect[p_vector[index]]);
+		render_map(p_entity);
+	}
 }
 
 void RenderWindow::fade(int &isFading, int &alpha)

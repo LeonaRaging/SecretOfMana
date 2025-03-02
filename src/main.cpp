@@ -20,6 +20,8 @@ int main(int argc, char* args[])
 	if (!(IMG_Init(IMG_INIT_PNG)))
 		cout << "IMG_Init has failed, Error: " << SDL_GetError() << endl;
 	RenderWindow window("GAME");
+	window.fontInit();
+	vector<numberDisplay> number;	
 
 	bool gameRunning = true, pause = false;
 	int isFading = 0, alpha;
@@ -27,7 +29,6 @@ int main(int argc, char* args[])
 	SDL_Event event;
 
 	player p(vector2f(248, 586), window); 
-	SDL_Rect camera;
 
 	init(window);
 	
@@ -102,47 +103,69 @@ int main(int argc, char* args[])
 					p_enemy->update(p.getHitbox(), currentMap.tiles, currentTime);
 				}
 			}
+
 						
-			p.update(currentMap.tiles, currentMap.enemies, currentTime);
-			p.update_camera(camera);
+			p.update(currentMap.tiles, currentMap.enemies, currentTime, number);
+			p.update_camera();
 
 			for (int i = 0; i < (int)currentMap.tilesIndex.size(); i++)
 				for (int j = 0; j < (int)currentMap.tilesIndex[i].size(); j++)
 				{
 					entity p_entity = entity(vector2f(j * 16, i * 16), tilesTexture, mapTiles[currentMap.tilesIndex[i][j]]);
-					window.render_map(p_entity, camera);
+					window.render_map(p_entity);
 				}
 
 			// for (entity &e: currentMap.tiles)
-				// window.render(e, camera);
+				// window.render(e);
 
 			for (auto &e : currentMap.enemies)
 				if ((*e).getPos().y < p.getPos().y)
-					window.render_entity(*e, camera);
+					window.render_entity(*e);
 
-			SDL_Texture* rectTexture = window.loadTexture("res/image/rect.png");
+			// SDL_Texture* rectTexture = window.loadTexture("res/image/rect.png");
 			// for (enemy *e : currentMap.enemies) {
 			// 	entity p_entity = entity(dynamic_cast<pebbler*>(e)->getPos(), rectTexture, dynamic_cast<pebbler*>(e)->getLegRect());
-			// 	window.render_map(p_entity, camera);
+			// 	window.render_map(p_entity);
 			// 	cout << p_entity.getPos().x << ' ' << p_entity.getPos().y << endl;
 			// }
 
-			window.render_entity(p, camera);
+			window.render_entity(p);
 			// entity p_entity(vector2f(p.getHitbox().x, p.getHitbox().y), rectTexture, 0, 0, p.getHitbox().w, p.getHitbox().h);
-			// window.render_map(p_entity, camera);
+			// window.render_map(p_entity);
 
 			for (auto &e : currentMap.enemies) {
 				if ((*e).getPos().y >= p.getPos().y)
-					window.render_entity(*e, camera);
-				window.render_entity((*e).projectile, camera);
+					window.render_entity(*e);
+				window.render_entity((*e).projectile);
 
 				// for (SDL_Rect p_rect : e->projectileHitbox)
 				// {
 				// 	entity p_entity(vector2f(p_rect.x, p_rect.y), rectTexture, 0, 0, p_rect.w, p_rect.h);
-				// 	window.render_map(p_entity, camera);
+				// 	window.render_map(p_entity);
 				// }
 			}
 
+			for (int index = 0; index < (int)number.size(); index++) {
+
+				window.render_font(number[index].value, number[index].pos, 0);
+
+				if (currentTime - number[index].lastUpdate > 100) 
+				{
+					number[index].timeLeft--;
+					if (number[index].timeLeft >= 5) number[index].pos.y += 2;
+					else number[index].pos.y -= 1;
+
+					if (number[index].timeLeft == 0)
+					{
+						swap(number[index], number.back());
+						number.pop_back();
+						index--;
+					}
+					number[index].lastUpdate = currentTime;
+				}
+			}
+
+			window.render_font(p.getHp(), vector2f(camera.x + 20, camera.y + SCREEN_HEIGHT - 20), 1);
 
 
 			if (isFading == 2) window.fade(isFading, alpha);

@@ -3,7 +3,7 @@
 player::player(vector2f p_pos, RenderWindow &window)
 	:entity(p_pos, NULL)
 {
-	hp = 100; speed = 1; order = 0; lastUpdate = 0; direction = 0; state = 0; timeLeft = 0;
+	hp = 250; speed = 1; order = 0; lastUpdate = 0; direction = 0; state = 0; timeLeft = 0;
 	hitbox = SDL_Rect{pos.x, pos.y - 26, 12, 32};
 
 	movingTexture = window.loadTexture("res/image/player/moving.png");
@@ -58,12 +58,17 @@ SDL_Rect player::getHitbox()
 	return hitbox;
 }
 
+int player::getHp()
+{
+	return hp;
+}
+
 void player::setPos(vector2f p_pos)
 {
 	pos = p_pos;
 }
 
-void player::update(vector<entity>& wall, vector<enemy*> &enemies, float currentTime) 
+void player::update(vector<entity>& wall, vector<enemy*> &enemies, float currentTime, vector<numberDisplay> &number) 
 {
 	const Uint8* keys = SDL_GetKeyboardState(NULL);
 
@@ -129,7 +134,9 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 				{
 					state = 3;
 					timeLeft = 12;
-					hp -= 10;
+					int hit = 20 + mt() % 20;
+					hp -= hit;
+					number.emplace_back(hit, pos);
 					hasbeenHit = true;
 					order = 0;
 
@@ -155,7 +162,7 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 					if (direction == 3) setFlip(SDL_FLIP_HORIZONTAL);
 					else setFlip(SDL_FLIP_NONE);
 
-					cout << direction << endl << endl;
+					// cout << direction << endl << endl;
 					break;
 				}
 			}
@@ -194,7 +201,7 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 			break;
 	}
 
-	if (currentTime - lastUpdate > 150)
+	if (currentTime - lastUpdate > 100)
 	{
 		order++;
 		
@@ -215,7 +222,7 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 				{
 					for (int index = 0; index < (int)enemies.size(); index++)
 					{	
-						int current = enemies[index]->isHit(pos, attackHitbox[direction]);
+						int current = enemies[index]->isHit(pos, attackHitbox[direction], number);
 						if (current == 1) {
 
 							if (kimonobird* p_enemy = dynamic_cast<kimonobird*>(enemies[index]))
@@ -266,7 +273,7 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 
 }
 
-void player::update_camera(SDL_Rect &camera)
+void player::update_camera()
 {
 	camera.x = pos.x - SCREEN_WIDTH / 2;
 	camera.y = pos.y - SCREEN_HEIGHT / 2;

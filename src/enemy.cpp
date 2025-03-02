@@ -4,10 +4,9 @@
 enemy::enemy(vector2f p_pos)
 	:entity(p_pos)
 {
-	hp = 3;
 }
 
-int enemy::isHit(vector2f p_pos, SDL_Rect p_rect)
+int enemy::isHit(vector2f p_pos, SDL_Rect p_rect, vector<numberDisplay> &number)
 {
 
 	p_rect.x = p_pos.x - 42 + p_rect.x;
@@ -15,7 +14,9 @@ int enemy::isHit(vector2f p_pos, SDL_Rect p_rect)
 
 	if (SDL_HasIntersection(&p_rect, &hitbox))
 	{
-		hp--;
+		int hit = 20 + mt() % 20;
+		hp -= hit;
+		number.emplace_back(hit, pos);
 		if (hp <= 0) 
 		{
 			cout << "enemy died!" << endl;
@@ -33,6 +34,7 @@ pebbler::pebbler(vector2f p_pos, RenderWindow &window):
 	enemy(p_pos)
 {
 	direction = directionX = directionY = state = timeLeft = order = 0; speed = 1;
+	hp = 186;
 	hitbox = SDL_Rect{pos.x - 42 + 38, pos.y - 42 + 21, 20, 27};
 	isSpawn = false;
 	tex = window.loadTexture("res/image/enemy/pebbler.png");
@@ -192,6 +194,7 @@ kimonobird::kimonobird(vector2f p_pos, RenderWindow &window)
 	:enemy(p_pos)
 {
 	directionX = directionY = state = timeLeft = order = 0; speed = 1;
+	hp = 160;
 	hitbox = SDL_Rect{pos.x - 42 + 40, pos.y - 42 + 14, 16, 34};
 	tex = window.loadTexture("res/image/enemy/kimonobird.png");
 
@@ -317,7 +320,7 @@ void kimonobird::update(SDL_Rect p_rect, vector<entity> &wall, float currentTime
 			case 3:
 				if (order == 4)
 				{
-					projectile = entity(vector2f(p_rect.x, p_rect.y - 64), tex, bolt[0]);
+					projectile = entity(vector2f(p_rect.x, p_rect.y - 48), tex, bolt[0]);
 				}
 				else if (order > 4)
 					projectile.setRect(bolt[order - 4]);
@@ -325,7 +328,7 @@ void kimonobird::update(SDL_Rect p_rect, vector<entity> &wall, float currentTime
 				if (timeLeft == 0) projectile.setRect(SDL_Rect{0, 0, 0, 0}), timeLeft = 12, state = 0, order = 0;
 
 				if (order >= 6 && order <= 7)
-					projectileHitbox.emplace_back(SDL_Rect{projectile.getPos().x, projectile.getPos().y + 64, 12, 12});
+					projectileHitbox.emplace_back(SDL_Rect{projectile.getPos().x, projectile.getPos().y + 48, 12, 12});
 
 				break;
 			case 5:
@@ -342,6 +345,7 @@ waterthug::waterthug(vector2f p_pos, RenderWindow &window)
 	:enemy(p_pos)
 {
 	direction = directionX = directionY = state = timeLeft = order = 0; speed = 1;
+	hp = 145;
 	hitbox = SDL_Rect{pos.x - 42 + 40, pos.y - 42 + 28, 16, 18};
 	tex = window.loadTexture("res/image/enemy/waterthug.png");
 

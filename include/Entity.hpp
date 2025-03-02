@@ -17,8 +17,8 @@ public:
 
 	void setRect(SDL_Rect p_rect);
 	void setFlip(SDL_RendererFlip p_flip);
-	void moveX(float p_speed, SDL_Rect p_rect, vector<entity> &wall);
-	void moveY(float p_speed, SDL_Rect p_rect, vector<entity> &wall);
+	void moveX(int p_speed, SDL_Rect p_rect, vector<entity> &wall);
+	void moveY(int p_speed, SDL_Rect p_rect, vector<entity> &wall);
 protected:
 	vector2f pos;
 	SDL_RendererFlip flip;

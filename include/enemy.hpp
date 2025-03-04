@@ -1,13 +1,14 @@
 #pragma once
 #include "entity.hpp"
 #include "RenderWindow.hpp"
+#include "audio.hpp"
 
 class enemy: public entity
 {
 public:
 	virtual ~enemy() = default;
 	enemy(vector2f p_pos);
-	int isHit(vector2f p_pos, SDL_Rect p_rect, vector<numberDisplay> &number);
+	int isHit(vector2f p_pos, SDL_Rect p_rect, vector<numberDisplay> &number, float currentTime);
 	entity projectile;
 	vector<SDL_Rect> projectileHitbox;
 protected:
@@ -20,7 +21,7 @@ protected:
 class pebbler : public enemy
 {
 public:
-	pebbler(vector2f p_pos, RenderWindow &window);
+	pebbler(vector2f p_pos);
 	void update(SDL_Rect p_rect, vector<entity> &wall, float currentTime);
 	void hurting();
 	void dying();
@@ -35,7 +36,7 @@ private:
 class kimonobird : public enemy
 {
 public:
-	kimonobird(vector2f p_pos, RenderWindow &window);
+	kimonobird(vector2f p_pos);
 	void update(SDL_Rect p_rect, vector<entity> &wall, float currentTime);
 	void hurting();
 	void dying();
@@ -49,7 +50,7 @@ private:
 class waterthug : public enemy
 {
 public:
-	waterthug(vector2f p_pos, RenderWindow &window);
+	waterthug(vector2f p_pos);
 	void update(SDL_Rect p_rect, vector<entity> &wall, float currentTime);
 	void hurting();
 	void dying();

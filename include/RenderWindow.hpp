@@ -1,6 +1,4 @@
 #pragma once
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
 #include "entity.hpp"
 
 class RenderWindow 
@@ -22,3 +20,5 @@ private:
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 };
+
+extern RenderWindow window;

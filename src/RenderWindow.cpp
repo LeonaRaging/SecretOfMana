@@ -2,6 +2,8 @@
 
 using namespace std;
 
+RenderWindow window("GAME");
+
 RenderWindow::RenderWindow(const char* p_title)
 	:window(NULL), renderer(NULL)
 {
@@ -89,6 +91,13 @@ void RenderWindow::fontInit()
 void RenderWindow::render_font(int number, vector2f p_pos, bool isPlayer)
 {
 	// cout << number << ' ' << p_pos.x << ' ' << p_pos.y << endl;
+	if (number == -1) 
+	{
+		entity p_entity(p_pos, fontTexture, 80, 8, 8, 8);
+		render_map(p_entity);
+		return;
+	}
+
 	vector<int> p_vector;
 
 	while (number > 0)

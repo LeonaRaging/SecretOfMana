@@ -1,6 +1,6 @@
 #include "player.hpp"
 
-player::player(vector2f p_pos, RenderWindow &window)
+player::player(vector2f p_pos)
 	:entity(p_pos, NULL)
 {
 	hp = 250; speed = 1; order = 0; lastUpdate = 0; direction = 0; state = 0; timeLeft = 0;
@@ -79,6 +79,7 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 			order = 0;
 			timeLeft = 5;
 			state = 2;
+			music.play("SwordSlash", currentTime);
 		}
 
 		else 
@@ -116,6 +117,7 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 				setFlip(SDL_FLIP_NONE);
 				state = 1;
 			}
+
 		}
 	}
 
@@ -139,6 +141,7 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 					number.emplace_back(hit, pos);
 					hasbeenHit = true;
 					order = 0;
+					music.play("playerhit", currentTime);
 
 					SDL_Rect rect;
 					int best = 0;
@@ -212,6 +215,7 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 
 			case 1:
 				order %= 6;
+				music.play("playermoving", currentTime);
 				break;
 
 			case 2:
@@ -222,7 +226,7 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 				{
 					for (int index = 0; index < (int)enemies.size(); index++)
 					{	
-						int current = enemies[index]->isHit(pos, attackHitbox[direction], number);
+						int current = enemies[index]->isHit(pos, attackHitbox[direction], number, currentTime);
 						if (current == 1) {
 
 							if (kimonobird* p_enemy = dynamic_cast<kimonobird*>(enemies[index]))

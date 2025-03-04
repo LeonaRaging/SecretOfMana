@@ -23,18 +23,18 @@ public:
 	vector<vector<int>> tilesIndex;
 	vector<entity> tiles;
 	vector<portal> portals;
-	int checkPortals(player &p_player, int &isFading, int &alpha);
+	int checkPortals(player &p_player, int &isFading, int &alpha, float currentTime);
 	int index;
 	vector<enemy*> enemies;
 private:
 };
 
-void init(RenderWindow &window);
+void init();
 
-map createMap(RenderWindow &window, int index, int width, int height);
+map createMap(int index, int width, int height);
 
-map dragon_cave_1(RenderWindow &window);
-map dragon_cave_2(RenderWindow &window);
-map dragon_cave_3(RenderWindow &window);
-map dragon_cave_4(RenderWindow &window);
-map dragon_cave_5(RenderWindow &window);
+map dragon_cave_1();
+map dragon_cave_2();
+map dragon_cave_3();
+map dragon_cave_4();
+map dragon_cave_5();

@@ -3,11 +3,12 @@
 #include "entity.hpp"
 #include "enemy.hpp"
 #include "RenderWindow.hpp"
+#include "audio.hpp"
 
 class player: public entity
 {
 public:
-	player(vector2f p_pos, RenderWindow &window);
+	player(vector2f p_pos);
 	SDL_Rect getLegRect();
 	SDL_Rect getHitbox();
 	int getHp();

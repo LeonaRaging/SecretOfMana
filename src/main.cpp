@@ -1,14 +1,9 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <iostream>
-#include <vector>
-#include <math.h>
-
 #include "RenderWindow.hpp"
 #include "entity.hpp"
 #include "player.hpp"
 #include "enemy.hpp"
 #include "map.hpp"
+#include "audio.hpp"
 
 using namespace std;
 
@@ -18,8 +13,12 @@ int main(int argc, char* args[])
 		cout << "SDL_Init has failed, Error: " << SDL_GetError() << endl;
 
 	if (!(IMG_Init(IMG_INIT_PNG)))
-		cout << "IMG_Init has failed, Error: " << SDL_GetError() << endl;
-	RenderWindow window("GAME");
+		cout << "IMG_Init has failed, Error: " << IMG_GetError() << endl;
+
+	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+		cout << "Mix_OpenAudio has failed, Error: " << Mix_GetError() << endl;
+
+	music.init();
 	window.fontInit();
 	vector<numberDisplay> number;	
 
@@ -28,16 +27,16 @@ int main(int argc, char* args[])
 
 	SDL_Event event;
 
-	player p(vector2f(248, 586), window); 
+	player p(vector2f(248, 586)); 
 
-	init(window);
+	init();
 	
 	map maps[6];
-	maps[1] = dragon_cave_1(window);
-	maps[2] = dragon_cave_2(window);
-	maps[3] = dragon_cave_3(window);
-	maps[4] = dragon_cave_4(window);
-	maps[5] = dragon_cave_5(window);
+	maps[1] = dragon_cave_1();
+	maps[2] = dragon_cave_2();
+	maps[3] = dragon_cave_3();
+	maps[4] = dragon_cave_4();
+	maps[5] = dragon_cave_5();
 	map currentMap = maps[1];
 
 	while (gameRunning) 
@@ -77,7 +76,7 @@ int main(int argc, char* args[])
 		if (Perf == 0) Perf = 1;
 		float currentTime = SDL_GetPerformanceCounter() / (float)Perf * 1000.0f;
 
-		currentMap = maps[currentMap.checkPortals(p, isFading, alpha)];
+		currentMap = maps[currentMap.checkPortals(p, isFading, alpha, currentTime)];
 
 		if (isFading == 1) {
 			window.fade(isFading, alpha);
@@ -165,8 +164,9 @@ int main(int argc, char* args[])
 				}
 			}
 
-			window.render_font(p.getHp(), vector2f(camera.x + 20, camera.y + SCREEN_HEIGHT - 20), 1);
-
+			window.render_font(p.getHp(), vector2f(camera.x + 10, camera.y + SCREEN_HEIGHT - 20), 1);
+			window.render_font(-1, vector2f(camera.x + 34, camera.y + SCREEN_HEIGHT - 20), 1);
+			window.render_font(250, vector2f(camera.x + 42, camera.y + SCREEN_HEIGHT - 20), 1);
 
 			if (isFading == 2) window.fade(isFading, alpha);
 		}		

@@ -4,7 +4,7 @@ SDL_Texture* tilesTexture = nullptr;
 vector<SDL_Rect> mapTiles;
 vector<SDL_Rect> tileHitBox[200];
 
-void init(RenderWindow &window)
+void init()
 {
 	for (int y = 0; y < 208; y += 16)
 		for (int x = 0; x < 256; x += 16) {
@@ -86,7 +86,7 @@ portal::portal(SDL_Rect p_rect, int p_int, vector2f p_vector):
 
 }
 
-map createMap(RenderWindow &window, int index, int width, int height)
+map createMap(int index, int width, int height)
 {
 	vector<vector<int>> p_vector(height);
 	vector<entity> p_tiles;
@@ -106,9 +106,9 @@ map createMap(RenderWindow &window, int index, int width, int height)
 	return map(p_vector, p_tiles);	
 }
 
-map dragon_cave_1(RenderWindow &window)
+map dragon_cave_1()
 {
-	map p_map = createMap(window, 1, 43, 40);
+	map p_map = createMap(1, 43, 40);
 	
 	p_map.portals.emplace_back(SDL_Rect{ 240, 480, 32, 4 }, 2, vector2f(283, 560));
 	p_map.portals.emplace_back(SDL_Rect{ 96, 336, 32, 4  }, 2, vector2f(171, 368));
@@ -120,22 +120,22 @@ map dragon_cave_1(RenderWindow &window)
 	return p_map;
 }
 
-map dragon_cave_2(RenderWindow &window)
+map dragon_cave_2()
 {
-	map p_map = createMap(window, 2, 38, 37);
+	map p_map = createMap(2, 38, 37);
 
 	p_map.portals.emplace_back(SDL_Rect{ 272, 572, 32, 4 }, 1, vector2f(251, 495 ));
 	p_map.portals.emplace_back(SDL_Rect{ 160, 380, 32, 4 }, 1, vector2f(107, 352));
 
-	p_map.enemies.emplace_back(new kimonobird(vector2f(128, 480), window));
+	p_map.enemies.emplace_back(new kimonobird(vector2f(128, 480)));
 
 	p_map.index = 2;
 	return p_map;
 }
 
-map dragon_cave_3(RenderWindow &window)
+map dragon_cave_3()
 {
-	map p_map = createMap(window, 3, 51, 41);
+	map p_map = createMap(3, 51, 41);
 
 	p_map.portals.emplace_back(SDL_Rect{ 448, 480, 32, 4 }, 1, vector2f(363, 496 ));
 	p_map.portals.emplace_back(SDL_Rect{ 464, 240, 32, 4 }, 1, vector2f(395, 256 ));
@@ -147,9 +147,9 @@ map dragon_cave_3(RenderWindow &window)
 	return p_map;
 }
 
-map dragon_cave_4(RenderWindow &window)
+map dragon_cave_4()
 {
-	map p_map = createMap(window, 4, 19, 19);
+	map p_map = createMap(4, 19, 19);
 
 	p_map.portals.emplace_back(SDL_Rect{ 224, 188, 32, 4 }, 3, vector2f(443, 80));
 
@@ -157,9 +157,9 @@ map dragon_cave_4(RenderWindow &window)
 	return p_map;
 }
 
-map dragon_cave_5(RenderWindow &window)
+map dragon_cave_5()
 {
-	map p_map = createMap(window, 5, 18, 17);
+	map p_map = createMap(5, 18, 17);
 
 	p_map.portals.emplace_back(SDL_Rect{224, 32, 32, 4}, 3, vector2f(251, 544));
 
@@ -167,7 +167,7 @@ map dragon_cave_5(RenderWindow &window)
 	return p_map;
 }
 
-int map::checkPortals(player &p, int &isFading, int &alpha)
+int map::checkPortals(player &p, int &isFading, int &alpha, float currentTime)
 {
 	SDL_Rect position = p.getLegRect();
 	for (portal p_portal : portals)
@@ -176,6 +176,7 @@ int map::checkPortals(player &p, int &isFading, int &alpha)
 		{
 			isFading = 1; alpha = 0;
 			p.setPos(p_portal.targetPosition);
+			music.play("door", currentTime);
 			return p_portal.targetMap;
 		}
 	}

@@ -23,7 +23,7 @@ public:
 	vector<vector<int>> tilesIndex;
 	vector<entity> tiles;
 	vector<portal> portals;
-	int checkPortals(player &p_player, int &isFading, int &alpha, float currentTime);
+	int checkPortals(player &p_player, float currentTime);
 	int index;
 	vector<enemy*> enemies;
 private:

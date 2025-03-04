@@ -3,7 +3,7 @@
 player::player(vector2f p_pos)
 	:entity(p_pos, NULL)
 {
-	hp = 250; speed = 1; order = 0; lastUpdate = 0; direction = 0; state = 0; timeLeft = 0;
+	hp = 50; speed = 1; order = 0; lastUpdate = 0; direction = 0; state = 0; timeLeft = 0;
 	hitbox = SDL_Rect{pos.x, pos.y - 26, 12, 32};
 
 	movingTexture = window.loadTexture("res/image/player/moving.png");
@@ -42,6 +42,10 @@ player::player(vector2f p_pos)
 
 	for (int i = 0; i < 4; i++)
 		CreateSprite(hurt[i], 7);
+
+	die.emplace_back(SDL_Rect{ 0, 448, 96, 64});
+
+	CreateSprite(die, 8);
 }
 
 SDL_Rect player::getLegRect() 
@@ -125,7 +129,7 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 
 	// cout << hp << endl;
 
-	if (state != 3)
+	if (state != 3 && state != 4)
 	{
 		for (int index = 0; index < (int)enemies.size(); index++)
 		{
@@ -142,6 +146,14 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 					hasbeenHit = true;
 					order = 0;
 					music.play("playerhit", currentTime);
+					hp = max(hp, 0);
+					if (hp == 0)
+					{
+						state = 4;
+						direction = 2;
+						timeLeft = 40;
+						break;
+					}
 
 					SDL_Rect rect;
 					int best = 0;
@@ -201,6 +213,12 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 			if (direction <= 1) moveY((direction ? -1 : 1) * speed, getLegRect(), wall);
 			else moveX((direction == 2 ? -1 : 1) * speed, getLegRect(), wall);
 			speed = 1;
+			break;
+
+		case 4:
+			tex = movingTexture;
+			order = min(order, 7);
+			currentFrame = die[order];
 			break;
 	}
 
@@ -269,6 +287,21 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 			case 3:
 				timeLeft--;
 				if (timeLeft == 0) order = 0;
+				break;
+
+			case 4:
+				timeLeft--;
+				if (timeLeft >= 35) moveX(-speed, getLegRect(), wall);
+				Mix_VolumeMusic(3 * timeLeft);
+				Mix_Volume(-1, 3 * timeLeft);
+				if (timeLeft == 0) 
+				{
+					isFading = 1;		
+					gameStart = false;
+					Mix_VolumeMusic(128);
+					Mix_Volume(-1, 128);
+					Mix_PlayMusic(music.titlescreen, -1);
+				}
 				break;
 		}
 		lastUpdate = currentTime;

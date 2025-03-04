@@ -38,6 +38,10 @@ mt19937 mt(chrono::steady_clock::now().time_since_epoch().count());
 
 SDL_Rect camera;
 
+int isFading, alpha;
+
+bool gameStart;
+
 int areaIntersection(SDL_Rect a, SDL_Rect b)
 {
 	// cout << a.x << ' ' << a.y << ' ' << a.w << ' ' << a.h << endl;
@@ -46,4 +50,14 @@ int areaIntersection(SDL_Rect a, SDL_Rect b)
 	int left = max(a.x, b.x), right = min(a.x + a.w - 1, b.x + b.w - 1),
 		top = max(a.y, b.y), bot = min(a.y + a.h - 1, b.y + b.h - 1);
 	return (right - left + 1) * (bot - top + 1);
+}
+
+int getNumberLength(int number)
+{
+	if (number == 0) return 1;
+	int res = 0;
+	while (number > 0)
+		number /= 10,
+		res++;
+	return res;
 }

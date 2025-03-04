@@ -17,9 +17,9 @@
 using namespace std;
 
 const int LEVEL_WIDTH = 1024;
-const int LEVEL_HEIGHT = 896;
+const int LEVEL_HEIGHT = 764;
 const int SCREEN_WIDTH = 256;
-const int SCREEN_HEIGHT = 244;
+const int SCREEN_HEIGHT = 191;
 const int TARGET_FPS = 100;
 const int FRAME_DELAY = 1000 / TARGET_FPS;
 const int aggroRadius = 150;
@@ -53,7 +53,11 @@ pair<int,int> RelativePostion(SDL_Rect a, SDL_Rect b);
 
 extern mt19937 mt;
 extern SDL_Rect camera;
+extern int isFading, alpha;
+extern bool gameStart;
 
 int Reverse(int direction);
 
 int areaIntersection(SDL_Rect a, SDL_Rect b);
+
+int getNumberLength(int number);

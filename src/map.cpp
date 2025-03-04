@@ -127,7 +127,7 @@ map dragon_cave_2()
 	p_map.portals.emplace_back(SDL_Rect{ 272, 572, 32, 4 }, 1, vector2f(251, 495 ));
 	p_map.portals.emplace_back(SDL_Rect{ 160, 380, 32, 4 }, 1, vector2f(107, 352));
 
-	p_map.enemies.emplace_back(new kimonobird(vector2f(128, 480)));
+	p_map.enemies.emplace_back(new pebbler(vector2f(128, 480)));
 
 	p_map.index = 2;
 	return p_map;
@@ -167,14 +167,14 @@ map dragon_cave_5()
 	return p_map;
 }
 
-int map::checkPortals(player &p, int &isFading, int &alpha, float currentTime)
+int map::checkPortals(player &p, float currentTime)
 {
 	SDL_Rect position = p.getLegRect();
 	for (portal p_portal : portals)
 	{
 		if (SDL_HasIntersection(&position, &p_portal.area))
 		{
-			isFading = 1; alpha = 0;
+			isFading = 1;
 			p.setPos(p_portal.targetPosition);
 			music.play("door", currentTime);
 			return p_portal.targetMap;

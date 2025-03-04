@@ -85,7 +85,7 @@ void RenderWindow::fontInit()
 		numRect[i] = SDL_Rect{8 * i, 0, 8, 8};
 		playerRect[i] = SDL_Rect{8 * i, 8, 8, 8};
 	}
-	fontTexture = loadTexture("res/image/font/font.png");
+	fontTexture = loadTexture("res/image/miscellaneous/font.png");
 }
 
 void RenderWindow::render_font(int number, vector2f p_pos, bool isPlayer)
@@ -99,7 +99,7 @@ void RenderWindow::render_font(int number, vector2f p_pos, bool isPlayer)
 	}
 
 	vector<int> p_vector;
-
+	if (number == 0) p_vector.push_back(0);
 	while (number > 0)
 	{
 		p_vector.push_back(number % 10);
@@ -120,18 +120,20 @@ void RenderWindow::fade(int &isFading, int &alpha)
 {
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, alpha);
 	SDL_RenderFillRect(renderer, NULL);
-	
+	// cout << alpha << endl;
 	int speed = 5;
 
 	if (isFading == 1)
 	{
 		alpha += speed;
-		if (alpha >= 255) isFading = 2;
+		alpha = min(alpha, 255);
+		if (alpha == 255) isFading = 2;
 	}
 	else
 	{
 		alpha -= speed;
-		if (alpha <= 0) isFading = 0;
+		alpha = max(alpha, 0);
+		if (alpha == 0) isFading = 0;
 	}
 }
 

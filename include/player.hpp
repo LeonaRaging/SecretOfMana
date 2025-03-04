@@ -8,7 +8,7 @@
 class player: public entity
 {
 public:
-	player(vector2f p_pos);
+	player(vector2f p_pos = {0, 0});
 	SDL_Rect getLegRect();
 	SDL_Rect getHitbox();
 	int getHp();
@@ -19,7 +19,7 @@ private:
 	int hp, direction, speed, order, timeLeft, state;
 	// state = {idle, moving, attacking, hurting, dying}
 	float lastUpdate;
-	vector<SDL_Rect> sprites[4], stance, attack[4], hurt[4];
+	vector<SDL_Rect> sprites[4], stance, attack[4], hurt[4], die;
 	SDL_Rect attackHitbox[4], hitbox;
 	SDL_Texture* attackTexture;
 	SDL_Texture* movingTexture;

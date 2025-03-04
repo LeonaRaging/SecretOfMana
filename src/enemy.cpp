@@ -3,19 +3,19 @@
 enemy::enemy(vector2f p_pos)
 	:entity(p_pos)
 {
+	isDeath = false;
 }
 
-int enemy::isHit(vector2f p_pos, SDL_Rect p_rect, vector<numberDisplay> &number, float currentTime)
+int enemy::isHit(vector2f p_pos, SDL_Rect p_rect, float currentTime)
 {
 
 	p_rect.x = p_pos.x - 42 + p_rect.x;
 	p_rect.y = p_pos.y - 42 + p_rect.y;
-
 	if (SDL_HasIntersection(&p_rect, &hitbox))
 	{
-		int hit = 20 + mt() % 20;
+		int hit = 40 + mt() % 20;
 		hp -= hit;
-		number.emplace_back(hit, pos);
+		number.push_back(numberDisplay(hit, pos));
 		if (hp <= 0) 
 		{
 			cout << "enemy died!" << endl;
@@ -25,7 +25,6 @@ int enemy::isHit(vector2f p_pos, SDL_Rect p_rect, vector<numberDisplay> &number,
 
 		music.play("enemyhit", currentTime);
 		cout << "enemy hit!" << endl;
-
 		return 1;
 	}
 	return 0;
@@ -183,6 +182,7 @@ void pebbler::update(SDL_Rect p_rect, vector<entity> &wall, float currentTime)
 				if (timeLeft == 0)
 				{
 					pos = {0, 0};
+					isDeath = true;
 				}
 
 				break;
@@ -252,17 +252,12 @@ void kimonobird::update(SDL_Rect p_rect, vector<entity> &wall, float currentTime
 			int value = mt() % 10;
 			order = 0;
 
-			if (value < 3)
+			if (value < 4)
 			{
 				state = 1;
 				timeLeft = 6;
 
 				tie(directionX, directionY) = RelativePostion(hitbox, p_rect);
-			}
-
-			else if (value < 0)
-			{
-				// state = 2;
 			}
 
 			else
@@ -273,7 +268,6 @@ void kimonobird::update(SDL_Rect p_rect, vector<entity> &wall, float currentTime
 			}
 		}
 	}
-	// cout << state << endl;
 
 	hitbox = SDL_Rect{0, 0, 0, 0};
 
@@ -337,8 +331,11 @@ void kimonobird::update(SDL_Rect p_rect, vector<entity> &wall, float currentTime
 
 				break;
 			case 5:
-				if (timeLeft == 0)
+				if (timeLeft == 0) 
+				{
 					pos = {0, 0};
+					isDeath = true;
+				}
 				break;
 		}
 
@@ -427,13 +424,13 @@ void waterthug::update(SDL_Rect p_rect, vector<entity> &wall, float currentTime)
 			int value = mt() % 10;
 			order = 0;
 
-			if (value < 3)
+			if (value < 4)
 			{
 				state = 1;
 				timeLeft = 3;
 			}
 
-			else if (value < 7)
+			else if (value < 6)
 			{
 				state = 2;
 				timeLeft = 2;
@@ -526,7 +523,10 @@ void waterthug::update(SDL_Rect p_rect, vector<entity> &wall, float currentTime)
 
 			case 5:	
 				if (timeLeft == 0)
+				{
 					pos = {0, 0};
+					isDeath = true;
+				}
 				break;
 		}
 

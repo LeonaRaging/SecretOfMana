@@ -90,14 +90,13 @@ map createMap(int index, int width, int height)
 {
 	vector<vector<int>> p_vector(height);
 	vector<entity> p_tiles;
-	SDL_Texture* rectTexture = window.loadTexture("res/image/rect.png");
+	SDL_Texture* rectTexture = window.loadTexture("res/image/map/tiles.png");
 	ifstream cin(("res/image/map/dragon_cave_" + to_string(index) + ".txt").c_str());
 
 	for (int i = 0; i < height; i++) {
 		for (int j = 0; j < width; j++)
 		{
 			int index; cin >> index; 
-			// cout << index << endl;
 			p_vector[i].push_back(index);
 			for (SDL_Rect &p_rect : tileHitBox[index])
 				p_tiles.emplace_back(vector2f(j * 16 + p_rect.x, i * 16 + p_rect.y), rectTexture, p_rect);
@@ -116,6 +115,12 @@ map dragon_cave_1()
 	p_map.portals.emplace_back(SDL_Rect{ 384, 268, 32, 4 }, 3, vector2f(475, 256));
 	p_map.portals.emplace_back(SDL_Rect{ 32, 220, 32, 4 }, 3, vector2f(171, 240));
 
+	p_map.enemies.emplace_back(new kimonobird(vector2f(176, 336)));
+	p_map.enemies.emplace_back(new kimonobird(vector2f(128, 192)));
+	p_map.enemies.emplace_back(new waterthug(vector2f(560, 336)));
+	p_map.enemies.emplace_back(new waterthug(vector2f(528, 336)));
+	p_map.enemies.emplace_back(new waterthug(vector2f(272, 192)));
+
 	p_map.index = 1;
 	return p_map;
 }
@@ -127,7 +132,10 @@ map dragon_cave_2()
 	p_map.portals.emplace_back(SDL_Rect{ 272, 572, 32, 4 }, 1, vector2f(251, 495 ));
 	p_map.portals.emplace_back(SDL_Rect{ 160, 380, 32, 4 }, 1, vector2f(107, 352));
 
-	p_map.enemies.emplace_back(new pebbler(vector2f(128, 480)));
+	p_map.enemies.emplace_back(new pebbler(vector2f(80, 448)));
+	p_map.enemies.emplace_back(new pebbler(vector2f(176, 208)));
+	p_map.enemies.emplace_back(new kimonobird(vector2f(64, 228)));
+	p_map.enemies.emplace_back(new kimonobird(vector2f(560, 224)));
 
 	p_map.index = 2;
 	return p_map;
@@ -143,6 +151,12 @@ map dragon_cave_3()
 	p_map.portals.emplace_back(SDL_Rect{ 432, 64 , 32, 4 }, 4 , vector2f(235, 176));
 	p_map.portals.emplace_back(SDL_Rect{ 240, 556, 32, 4 }, 5 , vector2f(235, 48));
 
+	p_map.enemies.emplace_back(new pebbler(vector2f(608, 432)));
+	p_map.enemies.emplace_back(new pebbler(vector2f(208, 384)));
+	p_map.enemies.emplace_back(new kimonobird(vector2f(608, 432)));
+	p_map.enemies.emplace_back(new kimonobird(vector2f(176, 368)));
+	p_map.enemies.emplace_back(new waterthug(vector2f(240, 128)));
+
 	p_map.index = 3;
 	return p_map;
 }
@@ -153,6 +167,9 @@ map dragon_cave_4()
 
 	p_map.portals.emplace_back(SDL_Rect{ 224, 188, 32, 4 }, 3, vector2f(443, 80));
 
+	p_map.enemies.emplace_back(new pebbler(vector2f(176, 112)));
+	p_map.enemies.emplace_back(new kimonobird(vector2f(32, 208)));
+
 	p_map.index = 4;
 	return p_map;
 }
@@ -162,6 +179,11 @@ map dragon_cave_5()
 	map p_map = createMap(5, 18, 17);
 
 	p_map.portals.emplace_back(SDL_Rect{224, 32, 32, 4}, 3, vector2f(251, 544));
+	p_map.portals.emplace_back(SDL_Rect{32, 176, 32, 4}, 0, vector2f(0, 0));
+
+	p_map.enemies.emplace_back(new pebbler(vector2f(48, 208)));
+	p_map.enemies.emplace_back(new kimonobird(vector2f(208, 128)));
+	p_map.enemies.emplace_back(new kimonobird(vector2f(192, 160)));
 
 	p_map.index = 5;
 	return p_map;
@@ -177,6 +199,13 @@ int map::checkPortals(player &p, float currentTime)
 			isFading = 1;
 			p.setPos(p_portal.targetPosition);
 			music.play("door", currentTime);
+
+			if (p_portal.targetMap == 0)
+			{
+				gameStart = false;
+				Mix_PlayMusic(music.titlescreen, -1);
+			}
+
 			return p_portal.targetMap;
 		}
 	}

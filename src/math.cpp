@@ -19,10 +19,6 @@ pair<int,int> RelativePostion(SDL_Rect a, SDL_Rect b)
 {
 	int directionX, directionY;
 
-	// cout << a.x << ' ' << a.y << ' ' << a.w << ' ' << a.h << endl;
-	// cout << b.x << ' ' << b.y << ' ' << b.w << ' ' << b.h << endl;
-	// cout << endl;
-
 	if (b.x + b.w - 1 < a.x) directionX = 3;
 	else if (b.x > a.x + a.w - 1) directionX = 2;
 	else directionX = -1;
@@ -42,11 +38,10 @@ int isFading, alpha;
 
 bool gameStart;
 
+vector<numberDisplay> number;
+
 int areaIntersection(SDL_Rect a, SDL_Rect b)
 {
-	// cout << a.x << ' ' << a.y << ' ' << a.w << ' ' << a.h << endl;
-	// cout << b.x << ' ' << b.y << ' ' << b.w << ' ' << b.h << endl;
-	// cout << endl;
 	int left = max(a.x, b.x), right = min(a.x + a.w - 1, b.x + b.w - 1),
 		top = max(a.y, b.y), bot = min(a.y + a.h - 1, b.y + b.h - 1);
 	return (right - left + 1) * (bot - top + 1);

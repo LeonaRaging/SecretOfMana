@@ -33,16 +33,16 @@ struct vector2f
 
 struct numberDisplay
 {
-	int value, timeLeft;
+	int value;
 	vector2f pos;
+	int timeLeft;
 	float lastUpdate;
 
 	numberDisplay(int value = 0, vector2f pos = {0, 0}):
-		value(value), pos(pos)
+		value(value), pos(pos), timeLeft(10), lastUpdate(0.0f)
 	{
-		timeLeft = 10;
-		lastUpdate = 0;
-	}
+
+	};
 };
 
 void CreateSprite(vector<SDL_Rect> &sprites, int size);
@@ -55,6 +55,7 @@ extern mt19937 mt;
 extern SDL_Rect camera;
 extern int isFading, alpha;
 extern bool gameStart;
+extern vector<numberDisplay> number;
 
 int Reverse(int direction);
 

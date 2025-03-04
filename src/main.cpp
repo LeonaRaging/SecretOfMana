@@ -21,7 +21,6 @@ int main(int argc, char* args[])
 	music.init();
 	window.fontInit();
 	init();
-	vector<numberDisplay> number;	
 
 	bool gameRunning = true, pause = false;
 	gameStart = false; isFading = alpha = 0;
@@ -54,7 +53,7 @@ int main(int argc, char* args[])
 				switch (event.window.event)
 				{
 					case SDL_WINDOWEVENT_FOCUS_LOST: 
-						pause = true;
+						// pause = true;
 						cout << "window lost focus!" << endl;
 						break;
 					case SDL_WINDOWEVENT_FOCUS_GAINED:
@@ -109,22 +108,22 @@ int main(int argc, char* args[])
 				for (enemy *e : currentMap.enemies) {
 					if (kimonobird* p_enemy = dynamic_cast<kimonobird*>(e))
 					{
-						p_enemy->update(p.getHitbox(), currentMap.tiles, currentTime);
+						if (!p_enemy->isDeath) p_enemy->update(p.getHitbox(), currentMap.tiles, currentTime);
 					}
 
 					if (pebbler* p_enemy = dynamic_cast<pebbler*>(e))
 					{
-						p_enemy->update(p.getHitbox(), currentMap.tiles, currentTime);
+						if (!p_enemy->isDeath) p_enemy->update(p.getHitbox(), currentMap.tiles, currentTime);
 					}
 
 					if (waterthug* p_enemy = dynamic_cast<waterthug*>(e))
 					{
-						p_enemy->update(p.getHitbox(), currentMap.tiles, currentTime);
+						if (!p_enemy->isDeath) p_enemy->update(p.getHitbox(), currentMap.tiles, currentTime);
 					}
 				}
 
 							
-				p.update(currentMap.tiles, currentMap.enemies, currentTime, number);
+				p.update(currentMap.tiles, currentMap.enemies, currentTime);
 				p.update_camera();
 
 				for (int i = 0; i < (int)currentMap.tilesIndex.size(); i++)
@@ -134,34 +133,16 @@ int main(int argc, char* args[])
 						window.render_map(p_entity);
 					}
 
-				// for (entity &e: currentMap.tiles)
-					// window.render(e);
-
 				for (auto &e : currentMap.enemies)
 					if ((*e).getPos().y < p.getPos().y)
 						window.render_entity(*e);
 
-				// SDL_Texture* rectTexture = window.loadTexture("res/image/rect.png");
-				// for (enemy *e : currentMap.enemies) {
-				// 	entity p_entity = entity(dynamic_cast<pebbler*>(e)->getPos(), rectTexture, dynamic_cast<pebbler*>(e)->getLegRect());
-				// 	window.render_map(p_entity);
-				// 	cout << p_entity.getPos().x << ' ' << p_entity.getPos().y << endl;
-				// }
-
 				window.render_entity(p);
-				// entity p_entity(vector2f(p.getHitbox().x, p.getHitbox().y), rectTexture, 0, 0, p.getHitbox().w, p.getHitbox().h);
-				// window.render_map(p_entity);
 
 				for (auto &e : currentMap.enemies) {
 					if ((*e).getPos().y >= p.getPos().y)
 						window.render_entity(*e);
 					window.render_entity((*e).projectile);
-
-					// for (SDL_Rect p_rect : e->projectileHitbox)
-					// {
-					// 	entity p_entity(vector2f(p_rect.x, p_rect.y), rectTexture, 0, 0, p_rect.w, p_rect.h);
-					// 	window.render_map(p_entity);
-					// }
 				}
 
 				for (int index = 0; index < (int)number.size(); index++) {
@@ -205,7 +186,6 @@ int main(int argc, char* args[])
 		float elapsedMS = (End - Start) / (float)Perf * 1000.0f;
 
 		if (elapsedMS < 16.666f) SDL_Delay(floor(16.666f - elapsedMS));
-		// cout << elapsedMS << endl;
 	}
 
 	window.cleanUp();

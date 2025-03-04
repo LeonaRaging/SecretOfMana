@@ -27,8 +27,10 @@ SDL_Texture* RenderWindow::loadTexture(const char* p_filePath)
 {
 	SDL_Surface* loadedSurface = IMG_Load(p_filePath);
 
-	if (loadedSurface == NULL)
+	if (loadedSurface == NULL) {
 		cout << "image could not be loaded!, Error" << SDL_GetError() << endl;
+		system("pause");
+	}
 
 	SDL_SetColorKey(loadedSurface, SDL_TRUE, SDL_MapRGB(loadedSurface->format, 128, 255, 128));
 
@@ -120,7 +122,6 @@ void RenderWindow::fade(int &isFading, int &alpha)
 {
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, alpha);
 	SDL_RenderFillRect(renderer, NULL);
-	// cout << alpha << endl;
 	int speed = 5;
 
 	if (isFading == 1)

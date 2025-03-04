@@ -3,7 +3,7 @@
 player::player(vector2f p_pos)
 	:entity(p_pos, NULL)
 {
-	hp = 50; speed = 1; order = 0; lastUpdate = 0; direction = 0; state = 0; timeLeft = 0;
+	hp = 250; speed = 1; order = 0; lastUpdate = 0; direction = 0; state = 0; timeLeft = 0;
 	hitbox = SDL_Rect{pos.x, pos.y - 26, 12, 32};
 
 	movingTexture = window.loadTexture("res/image/player/moving.png");
@@ -72,7 +72,7 @@ void player::setPos(vector2f p_pos)
 	pos = p_pos;
 }
 
-void player::update(vector<entity>& wall, vector<enemy*> &enemies, float currentTime, vector<numberDisplay> &number) 
+void player::update(vector<entity>& wall, vector<enemy*> &enemies, float currentTime) 
 {
 	const Uint8* keys = SDL_GetKeyboardState(NULL);
 
@@ -244,7 +244,7 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 				{
 					for (int index = 0; index < (int)enemies.size(); index++)
 					{	
-						int current = enemies[index]->isHit(pos, attackHitbox[direction], number, currentTime);
+						int current = enemies[index]->isHit(pos, attackHitbox[direction], currentTime);
 						if (current == 1) {
 
 							if (kimonobird* p_enemy = dynamic_cast<kimonobird*>(enemies[index]))

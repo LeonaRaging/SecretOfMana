@@ -8,9 +8,10 @@ class enemy: public entity
 public:
 	virtual ~enemy() = default;
 	enemy(vector2f p_pos);
-	int isHit(vector2f p_pos, SDL_Rect p_rect, vector<numberDisplay> &number, float currentTime);
+	int isHit(vector2f p_pos, SDL_Rect p_rect, float currentTime);
 	entity projectile;
 	vector<SDL_Rect> projectileHitbox;
+	bool isDeath;
 protected:
 	int directionX, directionY, direction, state, speed, order, timeLeft;
 	float lastUpdate;

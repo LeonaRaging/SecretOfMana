@@ -30,8 +30,8 @@ SDL_Rect entity::getCurrentFrame()
 SDL_Rect entity::getRect()
 {
 	SDL_Rect res;
-	res.x = pos.x;
-	res.y = pos.y;
+	res.x = (int)pos.x;
+	res.y = (int)pos.y;
 	res.w = currentFrame.w;
 	res.h = currentFrame.h;
 	return res;
@@ -45,6 +45,11 @@ SDL_Texture* entity::getTex()
 SDL_RendererFlip entity::getFlip()
 {
 	return flip;
+}
+
+void entity::setPos(vector2f p_pos)
+{
+	pos = p_pos;
 }
 
 void entity::setRect(SDL_Rect p_rect)
@@ -70,18 +75,22 @@ bool isCollision(SDL_Rect a, vector<entity>& b)
 	return false;
 }
 
-void entity::moveX(int p_speed, SDL_Rect p_rect, vector<entity> &wall)
+bool entity::moveX(float p_speed, SDL_Rect p_rect, vector<entity> &wall)
 {
-
-	pos.x += p_speed; p_rect.x += p_speed;
-	if (isCollision(p_rect, wall))
+	pos.x += p_speed; p_rect.x += (int)p_speed;
+	if (isCollision(p_rect, wall)) {
 		pos.x -= p_speed;
+		return true;
+	}
+	return false;
 }
 
-void entity::moveY(int p_speed, SDL_Rect p_rect, vector<entity> &wall) 
+bool entity::moveY(float p_speed, SDL_Rect p_rect, vector<entity> &wall) 
 {
-	pos.y += p_speed; p_rect.y += p_speed;
-
-	if (isCollision(p_rect, wall))
+	pos.y += p_speed; p_rect.y += (int)p_speed;
+	if (isCollision(p_rect, wall)) {
 		pos.y -= p_speed;
+		return true;
+	}
+	return false;
 }

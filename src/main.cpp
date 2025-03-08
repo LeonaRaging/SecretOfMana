@@ -26,7 +26,8 @@ int main(int argc, char* args[])
 	gameStart = false; isFading = alpha = 0;
 	SDL_Event event;
 	player p;
-	map maps[6], currentMap;
+	map maps[6];
+	int currentMap;
 
 	auto resetGame = [&]()
 	{
@@ -36,7 +37,7 @@ int main(int argc, char* args[])
 		maps[3] = dragon_cave_3();
 		maps[4] = dragon_cave_4();
 		maps[5] = dragon_cave_5();
-		currentMap = maps[1];
+		currentMap = 1;
 	};
 
 	while (gameRunning) 
@@ -81,10 +82,9 @@ int main(int argc, char* args[])
 
 
 		float Perf = SDL_GetPerformanceFrequency();
-		if (Perf == 0) Perf = 1;
-		float currentTime = SDL_GetPerformanceCounter() / (float)Perf * 1000.0f;
+		float currentTime = SDL_GetPerformanceCounter() / Perf * 1000.0f;
 
-		if (gameStart) currentMap = maps[currentMap.checkPortals(p, currentTime)];
+		if (gameStart) currentMap = maps[currentMap].checkPortals(p, currentTime);
 
 		if (isFading == 1) {
 			window.fade(isFading, alpha);
@@ -105,53 +105,61 @@ int main(int argc, char* args[])
 			else
 			{
 
-				for (enemy *e : currentMap.enemies) {
+				for (enemy *e : maps[currentMap].enemies) {
 					if (kimonobird* p_enemy = dynamic_cast<kimonobird*>(e))
 					{
-						p_enemy->update(p.getHitbox(), currentMap.tiles, currentTime);
+						p_enemy->update(p.getHitbox(), maps[currentMap].tiles, currentTime);
 					}
 
 					if (pebbler* p_enemy = dynamic_cast<pebbler*>(e))
 					{
-						p_enemy->update(p.getHitbox(), currentMap.tiles, currentTime);
+						p_enemy->update(p.getHitbox(), maps[currentMap].tiles, currentTime);
 					}
 
 					if (waterthug* p_enemy = dynamic_cast<waterthug*>(e))
 					{
-						p_enemy->update(p.getHitbox(), currentMap.tiles, currentTime);
+						p_enemy->update(p.getHitbox(), maps[currentMap].tiles, currentTime);
 					}
 				}
 
-				for (int index = 0; index < (int)currentMap.enemies.size(); index++)
+				for (int index = 0; index < (int)maps[currentMap].enemies.size(); index++)
 				{
-					if (currentMap.enemies[index]->isDeath) 
+					if (maps[currentMap].enemies[index]->isDeath) 
 					{
-						swap(currentMap.enemies[index], currentMap.enemies.back());
-						currentMap.enemies.pop_back();
+						swap(maps[currentMap].enemies[index], maps[currentMap].enemies.back());
+						maps[currentMap].enemies.pop_back();
+						cout << maps[currentMap].enemies.size() << endl;
 						index--;
 					}
 				}
 
-				p.update(currentMap.tiles, currentMap.enemies, currentTime);
+				p.update(maps[currentMap].tiles, maps[currentMap].enemies, currentTime);
 				p.update_camera();
 
-				for (int i = 0; i < (int)currentMap.tilesIndex.size(); i++)
-					for (int j = 0; j < (int)currentMap.tilesIndex[i].size(); j++)
+				for (int i = 0; i < (int)maps[currentMap].tilesIndex.size(); i++)
+					for (int j = 0; j < (int)maps[currentMap].tilesIndex[i].size(); j++)
 					{
-						entity p_entity = entity(vector2f(j * 16, i * 16), tilesTexture, mapTiles[currentMap.tilesIndex[i][j]]);
+						entity p_entity = entity(vector2f(j * 16, i * 16), tilesTexture, mapTiles[maps[currentMap].tilesIndex[i][j]]);
 						window.render_map(p_entity);
 					}
 
-				for (auto &e : currentMap.enemies)
+				for (auto &e : maps[currentMap].enemies) {
 					if ((*e).getPos().y < p.getPos().y)
 						window.render_entity(*e);
+				}
 
 				window.render_entity(p);
 
-				for (auto &e : currentMap.enemies) {
+				for (auto &e : maps[currentMap].enemies) {
 					if ((*e).getPos().y >= p.getPos().y)
 						window.render_entity(*e);
 					window.render_entity((*e).projectile);
+					// for (SDL_Rect p_rect : (*e).projectileHitbox)
+					// {
+					// 	SDL_Texture* tex = window.loadTexture("res/image/miscellaneous/rect.png");
+					// 	entity p_entity({p_rect.x, p_rect.y}, tex, 0, 0, p_rect.w, p_rect.h);
+					// 	window.render_map(p_entity);
+					// }
 				}
 
 				for (int index = 0; index < (int)number.size(); index++) {
@@ -194,8 +202,7 @@ int main(int argc, char* args[])
 		Uint32 End = SDL_GetPerformanceCounter();
 
 		Perf = SDL_GetPerformanceFrequency();
-		if (Perf == 0) Perf = 1;
-		float elapsedMS = (End - Start) / (float)Perf * 1000.0f;
+		float elapsedMS = (End - Start) / Perf * 1000.0f;
 
 		if (elapsedMS < 16.666f) SDL_Delay(floor(16.666f - elapsedMS));
 	}

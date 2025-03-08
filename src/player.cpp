@@ -3,8 +3,8 @@
 player::player(vector2f p_pos)
 	:entity(p_pos, NULL)
 {
-	hp = 250; speed = 1; order = 0; lastUpdate = 0; direction = 0; state = 0; timeLeft = 0;
-	hitbox = SDL_Rect{pos.x, pos.y - 26, 12, 32};
+	hp = 250; speed = 0.0625; order = 0; lastUpdate = 0; direction = 0; state = 0; timeLeft = 0;
+	hitbox = SDL_Rect{(int)pos.x, (int)pos.y - 26, 12, 32};
 
 	movingTexture = window.loadTexture("res/image/player/moving.png");
 	attackTexture = window.loadTexture("res/image/player/attack.png");
@@ -67,11 +67,6 @@ int player::getHp()
 	return hp;
 }
 
-void player::setPos(vector2f p_pos)
-{
-	pos = p_pos;
-}
-
 void player::update(vector<entity>& wall, vector<enemy*> &enemies, float currentTime) 
 {
 	const Uint8* keys = SDL_GetKeyboardState(NULL);
@@ -89,9 +84,11 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 		else 
 		{
 			state = 0;
+			if (physicUpdate == 0) physicUpdate = currentTime;
+			float delta = currentTime - physicUpdate;
 			if (keys[SDL_SCANCODE_W])
 			{
-				moveY(-speed, getLegRect(), wall);
+				moveY(-speed * delta, getLegRect(), wall);
 
 				direction = 0;
 				setFlip(SDL_FLIP_NONE);
@@ -99,7 +96,7 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 			}
 
 			if (keys[SDL_SCANCODE_S]) {
-				moveY(speed, getLegRect(), wall);
+				moveY(speed * delta, getLegRect(), wall);
 				
 				direction = 1;
 				setFlip(SDL_FLIP_NONE);
@@ -107,7 +104,7 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 			}
 
 			if (keys[SDL_SCANCODE_A]) {
-				moveX(-speed, getLegRect(), wall);
+				moveX(-speed * delta, getLegRect(), wall);
 				
 				direction = 2;
 				setFlip(SDL_FLIP_HORIZONTAL);
@@ -115,17 +112,17 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 			}
 
 			if (keys[SDL_SCANCODE_D]) {
-				moveX(speed, getLegRect(), wall);
+				moveX(speed * delta, getLegRect(), wall);
 				
 				direction = 3;
 				setFlip(SDL_FLIP_NONE);
 				state = 1;
 			}
-
 		}
 	}
+	
 
-	hitbox = SDL_Rect{pos.x, pos.y - 26, 12, 32};
+	hitbox = SDL_Rect{(int)pos.x, (int)pos.y - 26, 12, 32};
 
 	// cout << hp << endl;
 
@@ -207,12 +204,11 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 			tex = movingTexture;
 			order = min(order, 6);
 			currentFrame = hurt[direction][order];
-			if (order < 3) speed = 2;
-			else if (order < 5) speed = 1;
-			else speed = 0;
-			if (direction <= 1) moveY((direction ? -1 : 1) * speed, getLegRect(), wall);
-			else moveX((direction == 2 ? -1 : 1) * speed, getLegRect(), wall);
-			speed = 1;
+			if (order > 5) speed = 0;
+			if (direction <= 1) moveY((direction ? -1 : 1) * speed * (currentTime - physicUpdate), getLegRect(), wall);
+			else moveX((direction == 2 ? -1 : 1) * speed * (currentTime - physicUpdate), getLegRect(), wall);
+			physicUpdate = currentTime;
+			speed = 0.0625;
 			break;
 
 		case 4:
@@ -221,6 +217,8 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 			currentFrame = die[order];
 			break;
 	}
+
+	physicUpdate = currentTime;
 
 	if (currentTime - lastUpdate > 100)
 	{
@@ -305,9 +303,7 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 				break;
 		}
 		lastUpdate = currentTime;
-
 	}
-
 }
 
 void player::update_camera()

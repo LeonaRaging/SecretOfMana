@@ -1,6 +1,6 @@
 #pragma once
 
-#include "math.hpp"
+#include "utils.hpp"
 
 using namespace std;
 
@@ -14,11 +14,11 @@ public:
 	SDL_Rect getRect();
 	SDL_Texture* getTex();
 	SDL_RendererFlip getFlip();
-
+	void setPos(vector2f p_pos);
 	void setRect(SDL_Rect p_rect);
 	void setFlip(SDL_RendererFlip p_flip);
-	void moveX(int p_speed, SDL_Rect p_rect, vector<entity> &wall);
-	void moveY(int p_speed, SDL_Rect p_rect, vector<entity> &wall);
+	bool moveX(float p_speed, SDL_Rect p_rect, vector<entity> &wall);
+	bool moveY(float p_speed, SDL_Rect p_rect, vector<entity> &wall);
 protected:
 	vector2f pos;
 	SDL_RendererFlip flip;

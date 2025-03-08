@@ -15,6 +15,7 @@ void audio::init()
 
 void audio::play(string filename, float currentTime)
 {
+	
 	string filepath = "res/audio/" + filename + ".wav";
 	current = Mix_LoadWAV(filepath.c_str());
 	if (currentTime - lastUpdate[filepath.c_str()] > 250) {

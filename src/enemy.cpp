@@ -245,7 +245,7 @@ void kimonobird::update(SDL_Rect p_rect, vector<entity> &wall, float currentTime
 		if (Distance(pos, vector2f(p_rect.x, p_rect.y)) > aggroRadius)
 		{
 			state = 0;
-			timeLeft = 6;
+			timeLeft = 1;
 		}
 		else
 		{
@@ -417,7 +417,7 @@ void waterthug::update(SDL_Rect p_rect, vector<entity> &wall, float currentTime)
 		if (Distance(pos, vector2f(p_rect.x, p_rect.y)) > aggroRadius)
 		{
 			state = 0;
-			timeLeft = 6;
+			timeLeft = 1;
 		}
 		else
 		{

@@ -53,7 +53,7 @@ int main(int argc, char* args[])
 				switch (event.window.event)
 				{
 					case SDL_WINDOWEVENT_FOCUS_LOST: 
-						// pause = true;
+						pause = true;
 						cout << "window lost focus!" << endl;
 						break;
 					case SDL_WINDOWEVENT_FOCUS_GAINED:
@@ -108,21 +108,30 @@ int main(int argc, char* args[])
 				for (enemy *e : currentMap.enemies) {
 					if (kimonobird* p_enemy = dynamic_cast<kimonobird*>(e))
 					{
-						if (!p_enemy->isDeath) p_enemy->update(p.getHitbox(), currentMap.tiles, currentTime);
+						p_enemy->update(p.getHitbox(), currentMap.tiles, currentTime);
 					}
 
 					if (pebbler* p_enemy = dynamic_cast<pebbler*>(e))
 					{
-						if (!p_enemy->isDeath) p_enemy->update(p.getHitbox(), currentMap.tiles, currentTime);
+						p_enemy->update(p.getHitbox(), currentMap.tiles, currentTime);
 					}
 
 					if (waterthug* p_enemy = dynamic_cast<waterthug*>(e))
 					{
-						if (!p_enemy->isDeath) p_enemy->update(p.getHitbox(), currentMap.tiles, currentTime);
+						p_enemy->update(p.getHitbox(), currentMap.tiles, currentTime);
 					}
 				}
 
-							
+				for (int index = 0; index < (int)currentMap.enemies.size(); index++)
+				{
+					if (currentMap.enemies[index]->isDeath) 
+					{
+						swap(currentMap.enemies[index], currentMap.enemies.back());
+						currentMap.enemies.pop_back();
+						index--;
+					}
+				}
+
 				p.update(currentMap.tiles, currentMap.enemies, currentTime);
 				p.update_camera();
 
@@ -155,13 +164,16 @@ int main(int argc, char* args[])
 						if (number[index].timeLeft >= 5) number[index].pos.y += 2;
 						else number[index].pos.y -= 1;
 
+						
+						number[index].lastUpdate = currentTime;
+						
 						if (number[index].timeLeft == 0)
 						{
 							swap(number[index], number.back());
 							number.pop_back();
 							index--;
 						}
-						number[index].lastUpdate = currentTime;
+
 					}
 				}
 

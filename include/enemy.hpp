@@ -62,3 +62,17 @@ private:
 	vector<SDL_Rect> idle[4], throwing[4], trident, circle, die;
 	SDL_Rect hurt; 
 };
+
+class mantisant : public enemy
+{
+public:
+	mantisant(vector2f p_pos);
+	void update(SDL_Rect p_rect, vector<entity> &wall, float currentTime);
+	void hurting();
+	void dying();
+private:
+	// state = {idle, moving, slashing, bubble, blocking, dying}
+	vector<SDL_Rect> idle, slash, bubble, bubbleProjectile, die;
+	SDL_Rect slashHitbox[8];
+	SDL_Rect moving, wind, blocking;
+};

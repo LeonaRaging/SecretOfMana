@@ -4,6 +4,7 @@ player::player(vector2f p_pos)
 	:entity(p_pos, NULL)
 {
 	hp = 250; speed = 0.0625; order = 0; lastUpdate = 0; direction = 0; state = 0; timeLeft = 0;
+	lastParry = 0;
 	hitbox = SDL_Rect{(int)pos.x, (int)pos.y - 26, 12, 32};
 
 	movingTexture = window.loadTexture("res/image/player/moving.png");
@@ -46,6 +47,11 @@ player::player(vector2f p_pos)
 	die.emplace_back(SDL_Rect{ 0, 448, 96, 64});
 
 	CreateSprite(die, 8);
+
+	parry.emplace_back(SDL_Rect{ 0, 512, 96, 64});
+	parry.emplace_back(SDL_Rect{ 96, 512, 96, 64});
+	parry.emplace_back(SDL_Rect{ 192, 512, 96, 64});
+	parry.emplace_back(SDL_Rect{ 288, 512, 96, 64});
 }
 
 SDL_Rect player::getLegRect() 
@@ -78,7 +84,15 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 			order = 0;
 			timeLeft = 5;
 			state = 2;
-			music.play("SwordSlash", currentTime);
+			music.play("SwordSlash");
+		}
+
+		else if (keys[SDL_SCANCODE_K] && currentTime - lastParry >= 1000.0)
+		{
+			order = 0;
+			timeLeft = 6;
+			state = 5;
+			lastParry = currentTime;
 		}
 
 		else 
@@ -126,7 +140,7 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 
 	// cout << hp << endl;
 
-	if (state != 3 && state != 4)
+	if (state != 3 && state != 4 && (number.empty() || number.back().value != 0))
 	{
 		for (int index = 0; index < (int)enemies.size(); index++)
 		{
@@ -135,14 +149,25 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 			{
 				if (SDL_HasIntersection(&hitbox, &p_rect))
 				{
-					state = 3;
-					timeLeft = 12;
+					
 					int hit = 20 + mt() % 20;
+					if (state == 5)
+					{
+						music.play("Detect");
+						if (number.empty() || number.back().value != 0)
+							number.emplace_back(0, pos);
+						break;
+					}
+					else
+					{
+						timeLeft = 12;
+						state = 3;
+						music.play("playerhit");
+					}
 					hp -= hit;
 					number.emplace_back(hit, pos);
 					hasbeenHit = true;
 					order = 0;
-					music.play("playerhit", currentTime);
 					hp = max(hp, 0);
 					if (hp == 0)
 					{
@@ -178,7 +203,6 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 					break;
 				}
 			}
-
 			if (hasbeenHit) break;
 		}
 	}
@@ -216,6 +240,10 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 			order = min(order, 7);
 			currentFrame = die[order];
 			break;
+		case 5:
+			tex = movingTexture;
+			currentFrame = parry[direction];
+			break;
 	}
 
 	physicUpdate = currentTime;
@@ -231,7 +259,7 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 
 			case 1:
 				order %= 6;
-				music.play("playermoving", currentTime);
+				music.play("playermoving");
 				break;
 
 			case 2:
@@ -260,6 +288,11 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 								p_enemy->hurting();
 							}
 
+							if (mantisant* p_enemy = dynamic_cast<mantisant*>(enemies[index]))
+							{
+								p_enemy->hurting();
+							}
+
 						}
 						else if (current == 2) {
 
@@ -274,6 +307,11 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 							}
 
 							if (waterthug* p_enemy = dynamic_cast<waterthug*>(enemies[index]))
+							{
+								p_enemy->dying();
+							}
+
+							if (mantisant* p_enemy = dynamic_cast<mantisant*>(enemies[index]))
 							{
 								p_enemy->dying();
 							}
@@ -300,6 +338,10 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 					Mix_Volume(-1, 128);
 					Mix_PlayMusic(music.titlescreen, -1);
 				}
+				break;
+			case 5:
+				timeLeft--;
+				if (timeLeft == 0) order = 0;
 				break;
 		}
 		lastUpdate = currentTime;

@@ -115,7 +115,7 @@ map dragon_cave_1()
 	p_map.portals.emplace_back(SDL_Rect{ 384, 268, 32, 4 }, 3, vector2f(475, 256));
 	p_map.portals.emplace_back(SDL_Rect{ 32, 220, 32, 4 }, 3, vector2f(171, 240));
 
-	p_map.enemies.emplace_back(new kimonobird(vector2f(176, 336)));
+	p_map.enemies.emplace_back(new kimonobird(vector2f(96, 368)));
 	p_map.enemies.emplace_back(new kimonobird(vector2f(128, 192)));
 	p_map.enemies.emplace_back(new waterthug(vector2f(560, 336)));
 	p_map.enemies.emplace_back(new waterthug(vector2f(528, 336)));
@@ -179,7 +179,7 @@ map dragon_cave_5()
 	map p_map = createMap("dragon_cave_5", 18, 17);
 
 	p_map.portals.emplace_back(SDL_Rect{224, 32, 32, 4}, 3, vector2f(251, 544));
-	p_map.portals.emplace_back(SDL_Rect{32, 176, 32, 4}, 0, vector2f(0, 0));
+	p_map.portals.emplace_back(SDL_Rect{32, 176, 32, 4}, 6, vector2f(192, 272));
 
 	p_map.enemies.emplace_back(new pebbler(vector2f(48, 208)));
 	p_map.enemies.emplace_back(new kimonobird(vector2f(208, 128)));
@@ -192,6 +192,8 @@ map dragon_cave_5()
 map boss_arena()
 {
 	map p_map = createMap("boss_arena", 26, 22);
+
+	p_map.enemies.emplace_back(new mantisant(vector2f(192, 128)));
 
 	p_map.index = 6;
 	return p_map; 
@@ -206,13 +208,7 @@ int map::checkPortals(player &p, float currentTime)
 		{
 			isFading = 1;
 			p.setPos(p_portal.targetPosition);
-			music.play("door", currentTime);
-
-			if (p_portal.targetMap == 0)
-			{
-				gameStart = false;
-				Mix_PlayMusic(music.titlescreen, -1);
-			}
+			music.play("door");
 
 			return p_portal.targetMap;
 		}

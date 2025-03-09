@@ -17,6 +17,7 @@ int main(int argc, char* args[])
 
 	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
 		cout << "Mix_OpenAudio has failed, Error: " << Mix_GetError() << endl;
+	Mix_AllocateChannels(30);
 
 	music.init();
 	window.fontInit();
@@ -31,14 +32,14 @@ int main(int argc, char* args[])
 
 	auto resetGame = [&]()
 	{
-		p = player(vector2f(176, 272)); 
+		p = player(vector2f(250, 586)); 
 		maps[1] = dragon_cave_1();
 		maps[2] = dragon_cave_2();
 		maps[3] = dragon_cave_3();
 		maps[4] = dragon_cave_4();
 		maps[5] = dragon_cave_5();
 		maps[6] = boss_arena();
-		currentMap = 6;
+		currentMap = 1;
 	};
 
 	while (gameRunning) 
@@ -85,7 +86,11 @@ int main(int argc, char* args[])
 		float Perf = SDL_GetPerformanceFrequency();
 		float currentTime = SDL_GetPerformanceCounter() / Perf * 1000.0f;
 
-		if (gameStart) currentMap = maps[currentMap].checkPortals(p, currentTime);
+		if (gameStart) {
+			int nxt = maps[currentMap].checkPortals(p, currentTime);
+			if (currentMap != 6 && nxt == 6) Mix_PlayMusic(music.bosstheme, -1);
+			currentMap = nxt;
+		}
 
 		if (isFading == 1) {
 			window.fade(isFading, alpha);
@@ -121,6 +126,11 @@ int main(int argc, char* args[])
 					{
 						p_enemy->update(p.getHitbox(), maps[currentMap].tiles, currentTime);
 					}
+
+					if (mantisant* p_enemy = dynamic_cast<mantisant*>(e))
+					{
+						p_enemy->update(p.getHitbox(), maps[currentMap].tiles, currentTime);
+					}
 				}
 
 				for (int index = 0; index < (int)maps[currentMap].enemies.size(); index++)
@@ -129,7 +139,7 @@ int main(int argc, char* args[])
 					{
 						swap(maps[currentMap].enemies[index], maps[currentMap].enemies.back());
 						maps[currentMap].enemies.pop_back();
-						cout << maps[currentMap].enemies.size() << endl;
+						// cout << maps[currentMap].enemies.size() << endl;
 						index--;
 					}
 				}
@@ -155,12 +165,6 @@ int main(int argc, char* args[])
 					if ((*e).getPos().y >= p.getPos().y)
 						window.render_entity(*e);
 					window.render_entity((*e).projectile);
-					// for (SDL_Rect p_rect : (*e).projectileHitbox)
-					// {
-					// 	SDL_Texture* tex = window.loadTexture("res/image/miscellaneous/rect.png");
-					// 	entity p_entity({p_rect.x, p_rect.y}, tex, 0, 0, p_rect.w, p_rect.h);
-					// 	window.render_map(p_entity);
-					// }
 				}
 
 				for (int index = 0; index < (int)number.size(); index++) {

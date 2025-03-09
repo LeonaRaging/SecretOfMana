@@ -18,13 +18,13 @@ int enemy::isHit(vector2f p_pos, SDL_Rect p_rect, float currentTime)
 		number.push_back(numberDisplay(hit, pos));
 		if (hp <= 0) 
 		{
-			cout << "enemy died!" << endl;
-			music.play("enemydie", currentTime);
+			// cout << "enemy died!" << endl;
+			music.play("enemydie");
 			return 2;
 		}
 
-		music.play("enemyhit", currentTime);
-		cout << "enemy hit!" << endl;
+		music.play("enemyhit");
+		// cout << "enemy hit!" << endl;
 		return 1;
 	}
 	return 0;
@@ -92,7 +92,7 @@ void pebbler::update(SDL_Rect p_rect, vector<entity> &wall, float currentTime)
 		{
 			if (!isSpawn)
 			{
-				music.play("dig", currentTime);
+				music.play("dig");
 				order = 0;
 				state = 2;
 				timeLeft = 12;
@@ -105,7 +105,7 @@ void pebbler::update(SDL_Rect p_rect, vector<entity> &wall, float currentTime)
 				state = 1;
 				speed = 0.1;
 				timeLeft = 6;
-				music.play("spin", currentTime);
+				music.play("spin");
 				hitbox = SDL_Rect{(int)pos.x - 42 + 38, (int)pos.y - 42 + 21, 20, 27};
 
 				tie(directionX, directionY) = RelativePostion(hitbox, p_rect);
@@ -272,8 +272,8 @@ void kimonobird::update(SDL_Rect p_rect, vector<entity> &wall, float currentTime
 				state = 3;
 				castingType = mt() % 2;
 				timeLeft = 10;
-				music.play("kimonobirdhowl", currentTime);
-				if (!castingType) music.play("fire", currentTime);
+				music.play("kimonobirdhowl");
+				if (!castingType) music.play("fire");
 			}
 		}
 	}
@@ -342,7 +342,7 @@ void kimonobird::update(SDL_Rect p_rect, vector<entity> &wall, float currentTime
 					if (castingType)
 					{
 						projectile = entity(vector2f(p_rect.x, p_rect.y - 48), tex, bolt[0]);
-						music.play("Bolt", currentTime);
+						music.play("Bolt");
 					}
 					else
 					{
@@ -462,14 +462,14 @@ void waterthug::update(SDL_Rect p_rect, vector<entity> &wall, float currentTime)
 			{
 				state = 2;
 				timeLeft = 5;
-				music.play("cut", currentTime);
+				music.play("cut");
 			}
 
 			else
 			{
 				state = 3;
 				timeLeft = 4;
-				music.play("circle", currentTime);
+				music.play("circle");
 			}
 		}
 	}
@@ -566,5 +566,201 @@ void waterthug::update(SDL_Rect p_rect, vector<entity> &wall, float currentTime)
 
 		lastUpdate = currentTime;
 	}
+}
 
+mantisant::mantisant(vector2f p_pos)
+	:enemy(p_pos)
+{
+	directionX = directionY = state = timeLeft = order = 0; speed = 0.3;
+	hp = 300;
+	hitbox = SDL_Rect{(int)pos.x - 42 + 35, (int)pos.y - 42 + 27, 26, 36};
+	tex = window.loadTexture("res/image/enemy/mantisant.png");
+
+	idle.emplace_back(SDL_Rect{0, 0, 96, 96});
+	moving = SDL_Rect{0, 96, 96, 96};
+	wind = SDL_Rect{96, 96, 96, 96};
+	slash.emplace_back(SDL_Rect{0, 192, 96, 96});
+	bubble.emplace_back(SDL_Rect{0, 288, 96, 96});
+	bubbleProjectile.emplace_back(SDL_Rect{0, 384, 96, 96});
+	blocking = SDL_Rect{192, 96, 96, 96};
+	die.emplace_back(SDL_Rect{0, 480, 96, 96});
+
+	for (int i = 0; i < 8; i++)
+		slashHitbox[i] = SDL_Rect{0, 0, 0, 0};
+	slashHitbox[2] = SDL_Rect{2, 50, 15, 19};
+	slashHitbox[3] = SDL_Rect{46, 68, 22, 12};
+	slashHitbox[4] = SDL_Rect{27, 68, 22, 12};
+	slashHitbox[5] = SDL_Rect{79, 50, 15, 19};
+
+	CreateSprite(idle, 6);
+	CreateSprite(slash, 8);
+	CreateSprite(bubble, 8);
+	CreateSprite(bubbleProjectile, 13);
+	CreateSprite(die, 22);
+}
+
+void mantisant::hurting()
+{
+	if (mt() % 100 < 35) {
+		state = 4;
+		timeLeft = 10;
+		order = 0;
+		projectile.setRect(SDL_Rect{0, 0, 0, 0});
+	}
+}
+
+void mantisant::dying()
+{
+	music.play("explosion");
+	state = 5;
+	timeLeft = 50;
+	order = 0;
+	projectile.setRect(SDL_Rect{0, 0, 0, 0});
+}
+
+void mantisant::update(SDL_Rect p_rect, vector<entity> &wall, float currentTime)
+{
+	timeLeft = max(timeLeft, 0);
+	if (timeLeft == 0)
+	{
+		tie(directionX, directionY) = RelativePostion(hitbox, p_rect);
+
+		if (directionX != -1 && directionY == -1) direction = directionX;
+		if (directionX == -1 && directionY != -1) direction = directionY;
+		if (directionX != -1 && directionY != -1) direction = (mt() & 1 ? directionX : directionY);
+
+		if (p_rect.y < pos.y)
+		{
+			state = 1;
+			timeLeft = 10;
+		}
+
+		else
+		{
+			int value = mt() % 100;
+
+			if (value < 40)
+			{
+				state = 1;
+				timeLeft = 10;
+			}
+
+			else if (value < 75) 
+			{
+				state = 2;
+				timeLeft = 8;
+				music.play("slash");
+			}
+
+			else
+			{
+				state = 3;
+				timeLeft = 21;
+				music.play("bubble");
+			}
+		}
+
+		order = 0;
+	}
+
+	float delta = currentTime - physicUpdate;
+	projectileHitbox.clear();
+	switch (state)
+	{
+		case 0:	
+			currentFrame = idle[order];
+			hitbox = SDL_Rect{(int)pos.x - 42 + 35, (int)pos.y - 42 + 27, 26, 36};
+			break;
+		case 1:
+			currentFrame = moving;
+			hitbox = SDL_Rect{0, 0, 0, 0};
+			if (timeLeft >= 7) 
+			{
+				moveY(-speed * delta, SDL_Rect{0, 0, 0, 0}, wall);
+				music.play("bounce");
+			}
+			else if (timeLeft == 5) 
+			{
+				pos = {(float)p_rect.x, (float)p_rect.y - 235};
+			}
+			else
+			{
+				moveY(speed * delta, SDL_Rect{0, 0, 0, 0}, wall);
+			}
+			break;
+		case 2:
+			currentFrame = slash[order];
+			hitbox = SDL_Rect{(int)pos.x - 42 + 35, (int)pos.y - 42 + 27, 26, 36};
+			projectileHitbox.emplace_back(SDL_Rect{(int)pos.x - 42 + slashHitbox[order].x, (int)pos.y - 42 + slashHitbox[order].y, slashHitbox[order].w, slashHitbox[order].h});
+			projectileHitbox.emplace_back(SDL_Rect{(int)projectile.getPos().x - 42 + 32, (int)projectile.getPos().y - 42 + 53, 32, 11});
+			if (order == 7 || projectile.moveY(0.2 * delta, SDL_Rect{(int)pos.x - 42 + 32, (int)pos.y - 42 + 53, 32, 11}, wall))
+				projectile.setRect(SDL_Rect{0, 0, 0, 0});
+			break;
+		case 3:
+			if (order < 8) currentFrame = bubble[order];
+			else
+			{
+				currentFrame = idle[order % 6];
+				projectile = entity(vector2f(p_rect.x, p_rect.y + 32), tex, bubbleProjectile[order - 8]);
+			}
+			hitbox = SDL_Rect{(int)pos.x - 42 + 35, (int)pos.y - 42 + 27, 26, 36};
+			break;
+		case 4:
+			currentFrame = blocking;
+			hitbox = SDL_Rect{0, 0, 0, 0};
+			break;
+		case 5:
+			if (order < 22) currentFrame = die[order];
+			else currentFrame = SDL_Rect{576, 0, 0, 0};
+			hitbox = SDL_Rect{0, 0, 0, 0};
+			break;
+	}
+	physicUpdate = currentTime;
+
+
+	if (currentTime - lastUpdate > 200)
+	{
+		order++;
+		timeLeft--;
+
+		switch (state)
+		{
+			case 0:
+				order %= 6;
+				break;
+			case 1:
+				if (timeLeft == 0) {
+					projectileHitbox.emplace_back(SDL_Rect{(int)pos.x - 42 + 35, (int)pos.y - 42 + 27, 26, 36});
+					state = 2, order = 0, timeLeft = 8;
+					music.play("slash");
+				}
+				break;
+			case 2:
+				if (order == 3) projectile = entity(pos, tex, wind);
+				if (timeLeft == 0) {
+					state = 0, order = 0, timeLeft = 6;
+				}
+				break;
+			case 3:
+				if (timeLeft == 0) {
+					projectile.setRect(SDL_Rect{0, 0, 0, 0});
+					projectileHitbox.emplace_back(p_rect);
+				}
+				break;
+			case 4:
+				break;
+			case 5:
+				if (order > 22) Mix_VolumeMusic(4 * timeLeft);
+				if (timeLeft == 0) 
+				{
+					isFading = 1;		
+					gameStart = false;
+					Mix_VolumeMusic(128);
+					Mix_PlayMusic(music.titlescreen, -1);
+				}
+				break;
+		}
+
+		lastUpdate = currentTime;
+	}
 }

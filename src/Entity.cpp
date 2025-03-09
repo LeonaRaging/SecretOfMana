@@ -77,7 +77,7 @@ bool isCollision(SDL_Rect a, vector<entity>& b)
 
 bool entity::moveX(float p_speed, SDL_Rect p_rect, vector<entity> &wall)
 {
-	pos.x += p_speed; p_rect.x += (int)p_speed;
+	pos.x += p_speed; p_rect.x += round(p_speed);
 	if (isCollision(p_rect, wall)) {
 		pos.x -= p_speed;
 		return true;
@@ -87,7 +87,7 @@ bool entity::moveX(float p_speed, SDL_Rect p_rect, vector<entity> &wall)
 
 bool entity::moveY(float p_speed, SDL_Rect p_rect, vector<entity> &wall) 
 {
-	pos.y += p_speed; p_rect.y += (int)p_speed;
+	pos.y += p_speed; p_rect.y += round(p_speed);
 	if (isCollision(p_rect, wall)) {
 		pos.y -= p_speed;
 		return true;

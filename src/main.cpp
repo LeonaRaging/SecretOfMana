@@ -26,18 +26,19 @@ int main(int argc, char* args[])
 	gameStart = false; isFading = alpha = 0;
 	SDL_Event event;
 	player p;
-	map maps[6];
+	map maps[7];
 	int currentMap;
 
 	auto resetGame = [&]()
 	{
-		p = player(vector2f(248, 586)); 
+		p = player(vector2f(176, 272)); 
 		maps[1] = dragon_cave_1();
 		maps[2] = dragon_cave_2();
 		maps[3] = dragon_cave_3();
 		maps[4] = dragon_cave_4();
 		maps[5] = dragon_cave_5();
-		currentMap = 1;
+		maps[6] = boss_arena();
+		currentMap = 6;
 	};
 
 	while (gameRunning) 

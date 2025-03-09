@@ -44,7 +44,8 @@ public:
 	SDL_Rect getLegRect();
 private:
 	// state = {idle, moving, summoning, casting, hurting, dying};
-	vector<SDL_Rect> idle, summon, cast, die, bolt;
+	int castingType;
+	vector<SDL_Rect> idle, summon, cast, die, bolt, fire;
 	SDL_Rect hurt;
 };
 

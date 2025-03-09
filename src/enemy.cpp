@@ -199,7 +199,7 @@ void pebbler::update(SDL_Rect p_rect, vector<entity> &wall, float currentTime)
 kimonobird::kimonobird(vector2f p_pos)
 	:enemy(p_pos)
 {
-	directionX = directionY = state = timeLeft = order = 0; speed = 0.05;
+	directionX = directionY = state = timeLeft = order = castingType = 0; speed = 0.05;
 	hp = 160;
 	hitbox = SDL_Rect{(int)pos.x - 42 + 40, (int)pos.y - 42 + 14, 16, 34};
 	tex = window.loadTexture("res/image/enemy/kimonobird.png");
@@ -210,13 +210,15 @@ kimonobird::kimonobird(vector2f p_pos)
 	hurt = SDL_Rect{0, 192, 96, 64};
 	die.emplace_back(SDL_Rect{0, 256, 96, 64});
 	bolt.emplace_back(SDL_Rect{0, 320, 96, 112});
+	fire.emplace_back(SDL_Rect{0, 432, 96, 64});
+
 
 	CreateSprite(idle, 6);
 	CreateSprite(summon, 5);
 	CreateSprite(cast, 4);
 	CreateSprite(die, 20);
 	CreateSprite(bolt, 6);
-
+	CreateSprite(fire, 7);
 }
 
 SDL_Rect kimonobird::getLegRect()
@@ -257,7 +259,7 @@ void kimonobird::update(SDL_Rect p_rect, vector<entity> &wall, float currentTime
 			int value = mt() % 10;
 			order = 0;
 
-			if (value < 4)
+			if (value < 0)
 			{
 				state = 1;
 				timeLeft = 6;
@@ -268,8 +270,10 @@ void kimonobird::update(SDL_Rect p_rect, vector<entity> &wall, float currentTime
 			else
 			{
 				state = 3;
+				castingType = mt() % 2;
 				timeLeft = 10;
 				music.play("kimonobirdhowl", currentTime);
+				if (!castingType) music.play("fire", currentTime);
 			}
 		}
 	}
@@ -294,6 +298,15 @@ void kimonobird::update(SDL_Rect p_rect, vector<entity> &wall, float currentTime
 		case 3:
 			if (order == 0) currentFrame = cast[0];
 			else currentFrame = cast[(order - 1) % 3 + 1];
+
+			if (castingType) {
+				if (order >= 5 && order <= 6)
+					projectileHitbox.emplace_back(SDL_Rect{(int)projectile.getPos().x, (int)projectile.getPos().y + 48, 12, 12});
+			}
+			else {
+				projectile.moveY(-delta * 0.2, SDL_Rect{0, 0, 0, 0}, wall);
+				projectileHitbox.emplace_back(SDL_Rect{(int)projectile.getPos().x - 3, (int)projectile.getPos().y - 10, 16, 16});
+			}
 
 			break;
 		case 4:
@@ -326,16 +339,22 @@ void kimonobird::update(SDL_Rect p_rect, vector<entity> &wall, float currentTime
 			case 3:
 				if (order == 4)
 				{
-					projectile = entity(vector2f(p_rect.x, p_rect.y - 48), tex, bolt[0]);
-					music.play("Bolt", currentTime);
+					if (castingType)
+					{
+						projectile = entity(vector2f(p_rect.x, p_rect.y - 48), tex, bolt[0]);
+						music.play("Bolt", currentTime);
+					}
+					else
+					{
+						projectile = entity(vector2f(p_rect.x, p_rect.y + 100), tex, fire[0]);
+					}
 				}
 				else if (order > 4)
-					projectile.setRect(bolt[order - 4]);
+				{
+					if (castingType) projectile.setRect(bolt[order - 4]);
+				}
 
 				if (timeLeft == 0) projectile.setRect(SDL_Rect{0, 0, 0, 0}), timeLeft = 12, state = 0, order = 0;
-
-				if (order >= 6 && order <= 7)
-					projectileHitbox.emplace_back(SDL_Rect{(int)projectile.getPos().x, (int)projectile.getPos().y + 48, 12, 12});
 
 				break;
 			case 5:
@@ -457,6 +476,7 @@ void waterthug::update(SDL_Rect p_rect, vector<entity> &wall, float currentTime)
 
 	float delta = currentTime - physicUpdate;
 	hitbox = SDL_Rect{0, 0, 0, 0};
+	projectileHitbox.clear();	
 
 	switch (state)
 	{
@@ -477,8 +497,6 @@ void waterthug::update(SDL_Rect p_rect, vector<entity> &wall, float currentTime)
 			if (order <= 1) currentFrame = throwing[direction][order];
 			else currentFrame = idle[direction][order % 4];
 			hitbox = SDL_Rect{(int)pos.x - 42 + 40, (int)pos.y - 42 + 28, 16, 18};
-			// cout << trident[direction].x << ' ' << trident[direction].y << endl;
-			// if (projectile.flip == SDL_FLIP_HORIZONTAL) cout << "bad" << endl;
 			if (order == 0) projectile = entity(pos, tex, trident[direction]);
 			else 
 			{
@@ -491,11 +509,17 @@ void waterthug::update(SDL_Rect p_rect, vector<entity> &wall, float currentTime)
 				{
 					if (order == 4 || projectile.moveY((directionY ? speed : -speed) * delta, SDL_Rect{(int)projectile.getPos().x + 4, (int)projectile.getPos().y - 11, 8, 16}, wall)) projectile.setPos({0, 0});
 				} 
+				if (direction <= 1) projectileHitbox.push_back(SDL_Rect{(int)projectile.getPos().x + 4, (int)projectile.getPos().y - 11, 8, 16});
+				else projectileHitbox.push_back(SDL_Rect{(int)projectile.getPos().x - 4, (int)projectile.getPos().y - 4, 16, 8});
 			}
 			break;
 
 		case 3:
 			currentFrame = circle[order % 4];
+			if (order % 4 == 0) projectileHitbox.emplace_back(SDL_Rect{getLegRect().x, getLegRect().y, 12, 22});
+			if (order % 4 == 1) projectileHitbox.emplace_back(SDL_Rect{getLegRect().x + 22, getLegRect().y - 12, 22, 12});
+			if (order % 4 == 2) projectileHitbox.emplace_back(SDL_Rect{getLegRect().x, getLegRect().y - 22, 12, 22});
+			if (order % 4 == 3) projectileHitbox.emplace_back(SDL_Rect{getLegRect().x - 22, getLegRect().y - 12, 22, 12});
 			break;
 
 		case 4:
@@ -510,11 +534,8 @@ void waterthug::update(SDL_Rect p_rect, vector<entity> &wall, float currentTime)
 
 	if (currentTime - lastUpdate > 200)
 	{
-		projectileHitbox.clear();
 		order++;
 		timeLeft--;
-
-		SDL_Rect p_rect;
 
 		switch (state)
 		{
@@ -527,17 +548,10 @@ void waterthug::update(SDL_Rect p_rect, vector<entity> &wall, float currentTime)
 				break;
 
 			case 2:
-				if (direction <= 1) projectileHitbox.push_back(SDL_Rect{(int)projectile.getPos().x + 4, (int)projectile.getPos().y - 11, 8, 16});
-				else projectileHitbox.push_back(SDL_Rect{(int)projectile.getPos().x - 4, (int)projectile.getPos().y - 4, 16, 8});
 				if (timeLeft == 0) timeLeft = 8, state = 0, order = 0;
 				break;
 
 			case 3:
-				p_rect = getLegRect();
-				if (order % 4 == 0) projectileHitbox.emplace_back(SDL_Rect{p_rect.x, p_rect.y, 12, 22});
-				if (order % 4 == 1) projectileHitbox.emplace_back(SDL_Rect{p_rect.x + 22, p_rect.y - 12, 22, 12});
-				if (order % 4 == 2) projectileHitbox.emplace_back(SDL_Rect{p_rect.x, p_rect.y - 22, 12, 22});
-				if (order % 4 == 3) projectileHitbox.emplace_back(SDL_Rect{p_rect.x - 22, p_rect.y - 12, 22, 12});
 				if (timeLeft == 0) timeLeft = 8, state = 0, order = 0;
 				break;
 

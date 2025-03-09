@@ -16,13 +16,15 @@ def slice_tileset(tileset_img, tile_width, tile_height):
     return tiles
 
 def compare_tiles(tile1, tile2):
-    arr1 = np.array(tile1)
-    arr2 = np.array(tile2)
+    arr1 = np.array(tile1.convert("RGB"))
+    arr2 = np.array(tile2.convert("RGB"))
     return np.array_equal(arr1, arr2)
 
 def process_map(map_img, tiles, tile_width, tile_height):
     map_width, map_height = map_img.size
     indices = []
+
+    
 
     for y in range(0, map_height, tile_height):
         row = []
@@ -34,8 +36,8 @@ def process_map(map_img, tiles, tile_width, tile_height):
                 if compare_tiles(map_tile, tile):
                     index = i 
                     break
-            if index == -1:
-                print(x / 16, y / 16)
+            if x / 16 == 6 and y / 16 == 1:
+                print(index)
             row.append(index)
         indices.append(row)
     return indices
@@ -48,7 +50,7 @@ def save_to_txt(indices, filename):
 if __name__ == "__main__":
     # Paths to images
     map_tiles_path = "Tiles.png"
-    map_path = "dragon_cave_5.png"
+    map_path = "boss_arena.png"
 
     # Set your tile size
     TILE_WIDTH = 16

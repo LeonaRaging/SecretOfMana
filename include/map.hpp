@@ -38,3 +38,4 @@ map dragon_cave_2();
 map dragon_cave_3();
 map dragon_cave_4();
 map dragon_cave_5();
+map boss_arena();

@@ -9,8 +9,7 @@ A clone of Secret Of Mana using the SDL2 library, written in C++. Secret Of Mana
 
 # 0. How to download
 
-## Prerequiste:
-Latest MinGW64 version.
+Code (Green button) -> download ZIP -> extract and enjoy.
 
 # 1. How to start
 Start by open game.exe file. A window will pop-up, press enter to start the game.

@@ -13,8 +13,8 @@ public:
 	vector<SDL_Rect> projectileHitbox;
 	bool isDeath;
 protected:
-	int directionX, directionY, direction, state, order, timeLeft;
-	float lastUpdate, physicUpdate, speed;
+	int directionX{}, directionY{}, direction{}, state{}, order{}, timeLeft{};
+	float lastUpdate{}, physicUpdate{}, speed{};
 	int hp;
 	SDL_Rect hitbox;
 };

@@ -246,7 +246,6 @@ void kimonobird::dying()
 void kimonobird::update(SDL_Rect p_rect, vector<entity> &wall, float currentTime)
 {
 	timeLeft = max(timeLeft, 0);
-	// cout << timeLeft << ' ' << order << endl;
 	if (timeLeft == 0)
 	{
 		if (Distance(pos, vector2f(p_rect.x, p_rect.y)) > aggroRadius)
@@ -259,7 +258,7 @@ void kimonobird::update(SDL_Rect p_rect, vector<entity> &wall, float currentTime
 			int value = mt() % 10;
 			order = 0;
 
-			if (value < 0)
+			if (value < 2)
 			{
 				state = 1;
 				timeLeft = 6;
@@ -303,7 +302,7 @@ void kimonobird::update(SDL_Rect p_rect, vector<entity> &wall, float currentTime
 				if (order >= 5 && order <= 6)
 					projectileHitbox.emplace_back(SDL_Rect{(int)projectile.getPos().x, (int)projectile.getPos().y + 48, 12, 12});
 			}
-			else {
+			else if (order >= 4) {
 				projectile.moveY(-delta * 0.2, SDL_Rect{0, 0, 0, 0}, wall);
 				projectileHitbox.emplace_back(SDL_Rect{(int)projectile.getPos().x - 3, (int)projectile.getPos().y - 10, 16, 16});
 			}
@@ -601,7 +600,7 @@ mantisant::mantisant(vector2f p_pos)
 
 void mantisant::hurting()
 {
-	if (mt() % 100 < 35) {
+	if (mt() % 100 < 60) {
 		state = 4;
 		timeLeft = 10;
 		order = 0;
@@ -645,7 +644,7 @@ void mantisant::update(SDL_Rect p_rect, vector<entity> &wall, float currentTime)
 				timeLeft = 10;
 			}
 
-			else if (value < 75) 
+			else if (value < 65) 
 			{
 				state = 2;
 				timeLeft = 8;

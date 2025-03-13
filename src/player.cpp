@@ -90,7 +90,7 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 		else if (keys[SDL_SCANCODE_K] && currentTime - lastParry >= 1000.0)
 		{
 			order = 0;
-			timeLeft = 6;
+			timeLeft = 3;
 			state = 5;
 			lastParry = currentTime;
 		}
@@ -100,6 +100,7 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 			state = 0;
 			if (physicUpdate == 0) physicUpdate = currentTime;
 			float delta = currentTime - physicUpdate;
+			delta = min(delta, 16.0f);
 			if (keys[SDL_SCANCODE_W])
 			{
 				moveY(-speed * delta, getLegRect(), wall);
@@ -111,7 +112,6 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 
 			if (keys[SDL_SCANCODE_S]) {
 				moveY(speed * delta, getLegRect(), wall);
-				
 				direction = 1;
 				setFlip(SDL_FLIP_NONE);
 				state = 1;

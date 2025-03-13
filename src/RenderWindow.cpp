@@ -118,12 +118,11 @@ void RenderWindow::render_font(int number, vector2f p_pos, bool isPlayer)
 	}
 }
 
-void RenderWindow::fade(int &isFading, int &alpha)
+void RenderWindow::fade()
 {
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, alpha);
 	SDL_RenderFillRect(renderer, NULL);
 	int speed = 5;
-
 	if (isFading == 1)
 	{
 		alpha += speed;

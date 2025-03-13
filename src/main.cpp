@@ -93,7 +93,7 @@ int main(int argc, char* args[])
 		}
 
 		if (isFading == 1) {
-			window.fade(isFading, alpha);
+			window.fade();
 		}
 		
 		else 
@@ -139,7 +139,6 @@ int main(int argc, char* args[])
 					{
 						swap(maps[currentMap].enemies[index], maps[currentMap].enemies.back());
 						maps[currentMap].enemies.pop_back();
-						// cout << maps[currentMap].enemies.size() << endl;
 						index--;
 					}
 				}
@@ -165,6 +164,11 @@ int main(int argc, char* args[])
 					if ((*e).getPos().y >= p.getPos().y)
 						window.render_entity(*e);
 					window.render_entity((*e).projectile);
+					// for (SDL_Rect p_rect : (*e).projectileHitbox) {
+					// 	SDL_Texture* tex = window.loadTexture("res/image/miscellaneous/rect.png");
+					// 	entity p_entity(vector2f(p_rect.x, p_rect.y), tex, 0, 0, p_rect.w, p_rect.h); 
+					// 	window.render_map(p_entity);
+					// }
 				}
 
 				for (int index = 0; index < (int)number.size(); index++) {
@@ -198,7 +202,7 @@ int main(int argc, char* args[])
 
 			if (isFading == 2)
 			{
-				window.fade(isFading, alpha);
+				window.fade();
 			}
 		}		
 

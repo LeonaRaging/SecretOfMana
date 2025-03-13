@@ -11,7 +11,7 @@ public:
 	void render_map(entity &e);
 	void render_entity(entity &e);
 	void render_font(int number, vector2f p_pos, bool isPlayer);
-	void fade(int &isFading, int &alpha);
+	void fade();
 	void display();
 	void cleanUp();
 private:

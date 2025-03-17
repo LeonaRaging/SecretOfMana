@@ -104,7 +104,7 @@ void pebbler::update(SDL_Rect p_rect, vector<entity> &wall, float currentTime)
 				order = 0; 
 				state = 1;
 				speed = 0.1;
-				timeLeft = 6;
+				timeLeft = mt() % 4 + 3;
 				music.play("spin");
 				hitbox = SDL_Rect{(int)pos.x - 42 + 38, (int)pos.y - 42 + 21, 20, 27};
 
@@ -261,9 +261,13 @@ void kimonobird::update(SDL_Rect p_rect, vector<entity> &wall, float currentTime
 			if (value < 2)
 			{
 				state = 1;
-				timeLeft = 6;
+				timeLeft = mt() % 3 + 1;
 
-				tie(directionX, directionY) = RelativePostion(hitbox, p_rect);
+				if (mt() % 3 == 0) directionX = -1;
+				else directionX = (mt() % 2 ? 2 : 3);
+
+				if (mt() % 3 == 0) directionY = -1;
+				else directionY = mt() % 2;
 			}
 
 			else
@@ -454,7 +458,7 @@ void waterthug::update(SDL_Rect p_rect, vector<entity> &wall, float currentTime)
 			if (value < 4)
 			{
 				state = 1;
-				timeLeft = 3;
+				timeLeft = mt() % 4 + 3;
 			}
 
 			else if (value < 7)

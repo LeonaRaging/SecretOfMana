@@ -21,6 +21,7 @@ void audio::play(string filename)
 	current = Mix_LoadWAV(filepath.c_str());
 	if (channel.find(filepath) == channel.end())
 		channel[filepath] = channel[""]++;
+	Mix_Volume(channel[filepath], 64);
 	if (!Mix_Playing(channel[filepath]))
 		Mix_PlayChannel(channel[filepath], current, 0);
 }

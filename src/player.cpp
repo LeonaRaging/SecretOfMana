@@ -4,7 +4,7 @@ player::player(vector2f p_pos)
 	:entity(p_pos, NULL)
 {
 	hp = 250; speed = 0.0625; order = 0; lastUpdate = 0; direction = 0; state = 0; timeLeft = 0;
-	lastParry = 0;
+	lastParry = 0; physicUpdate = 0;
 	hitbox = SDL_Rect{(int)pos.x, (int)pos.y - 26, 12, 32};
 
 	movingTexture = window.loadTexture("res/image/player/moving.png");
@@ -100,7 +100,7 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 			state = 0;
 			if (physicUpdate == 0) physicUpdate = currentTime;
 			float delta = currentTime - physicUpdate;
-			delta = min(delta, 16.0f);
+			delta = min(delta, 16.0);
 			if (keys[SDL_SCANCODE_W])
 			{
 				moveY(-speed * delta, getLegRect(), wall);
@@ -328,14 +328,14 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 			case 4:
 				timeLeft--;
 				if (timeLeft >= 35) moveX(-speed, getLegRect(), wall);
-				Mix_VolumeMusic(3 * timeLeft);
-				Mix_Volume(-1, 3 * timeLeft);
+				Mix_VolumeMusic(2 * timeLeft);
+				Mix_Volume(-1, 2 * timeLeft);
 				if (timeLeft == 0) 
 				{
 					isFading = 1;		
 					gameStart = false;
-					Mix_VolumeMusic(128);
-					Mix_Volume(-1, 128);
+					Mix_VolumeMusic(64);
+					Mix_Volume(-1, 64);
 					Mix_PlayMusic(music.titlescreen, -1);
 				}
 				break;

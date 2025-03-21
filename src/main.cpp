@@ -84,8 +84,7 @@ int main(int argc, char* args[])
 
 
 		float Perf = SDL_GetPerformanceFrequency();
-		float currentTime = SDL_GetPerformanceCounter() / Perf * 1000.0f;
-
+		float currentTime = SDL_GetPerformanceCounter() / Perf * 1000.f;
 		if (gameStart) {
 			int nxt = maps[currentMap].checkPortals(p, currentTime);
 			if (currentMap != 6 && nxt == 6) Mix_PlayMusic(music.bosstheme, -1);
@@ -212,7 +211,7 @@ int main(int argc, char* args[])
 
 		Perf = SDL_GetPerformanceFrequency();
 		float elapsedMS = (End - Start) / Perf * 1000.0f;
-
+		cout << elapsedMS << endl;
 		if (elapsedMS < 16.666f) SDL_Delay(floor(16.666f - elapsedMS));
 	}
 

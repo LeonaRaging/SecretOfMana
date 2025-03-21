@@ -15,6 +15,8 @@
 #include <unordered_map>
 #include <cassert>
 
+#define float double
+
 using namespace std;
 
 const int LEVEL_WIDTH = 1024;

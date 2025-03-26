@@ -34,7 +34,7 @@ pebbler::pebbler(vector2f p_pos):
 	enemy(p_pos)
 {
 	direction = directionX = directionY = state = timeLeft = order = 0; speed = 0.05;
-	hp = 186;
+	hp = 160;
 	hitbox = SDL_Rect{(int)pos.x - 42 + 38, (int)pos.y - 42 + 21, 20, 27};
 	isSpawn = false;
 	tex = window.loadTexture("res/image/enemy/pebbler.png");
@@ -200,7 +200,7 @@ kimonobird::kimonobird(vector2f p_pos)
 	:enemy(p_pos)
 {
 	directionX = directionY = state = timeLeft = order = castingType = 0; speed = 0.05;
-	hp = 160;
+	hp = 120;
 	hitbox = SDL_Rect{(int)pos.x - 42 + 40, (int)pos.y - 42 + 14, 16, 34};
 	tex = window.loadTexture("res/image/enemy/kimonobird.png");
 
@@ -420,6 +420,7 @@ SDL_Rect waterthug::getLegRect()
 
 void waterthug::hurting()
 {
+	projectile.setPos({0, 0});
 	state = 4;
 	timeLeft = 10;
 }

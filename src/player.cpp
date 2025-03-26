@@ -3,7 +3,7 @@
 player::player(vector2f p_pos)
 	:entity(p_pos, NULL)
 {
-	hp = 250; speed = 0.0625; order = 0; lastUpdate = 0; direction = 0; state = 0; timeLeft = 0;
+	hp = 250; speed = 0.0625; order = 0; lastUpdate = 0; direction = 0; state = 0; timeLeft = 0; healLeft = 3;
 	lastParry = 0; physicUpdate = 0;
 	hitbox = SDL_Rect{(int)pos.x, (int)pos.y - 26, 12, 32};
 
@@ -52,6 +52,11 @@ player::player(vector2f p_pos)
 	parry.emplace_back(SDL_Rect{ 96, 512, 96, 64});
 	parry.emplace_back(SDL_Rect{ 192, 512, 96, 64});
 	parry.emplace_back(SDL_Rect{ 288, 512, 96, 64});
+
+	heal.emplace_back(SDL_Rect{ 0, 576, 96, 64});
+
+	CreateSprite(heal, 12);
+	projectile = entity({0, 0}, movingTexture, heal[0]);
 }
 
 SDL_Rect player::getLegRect() 
@@ -90,9 +95,19 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 		else if (keys[SDL_SCANCODE_K] && currentTime - lastParry >= 1000.0)
 		{
 			order = 0;
-			timeLeft = 3;
+			timeLeft = 4;
 			state = 5;
 			lastParry = currentTime;
+		}
+
+		else if (keys[SDL_SCANCODE_F] && healLeft > 0)
+		{
+			timeLeft = 12;
+			state = 6;
+			order = 0;
+			projectile.setPos(pos);
+			healLeft--;
+			music.play("healing");
 		}
 
 		else 
@@ -203,7 +218,10 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 					break;
 				}
 			}
-			if (hasbeenHit) break;
+			if (hasbeenHit) {
+				projectile.setPos({0, 0});
+				break;
+			}
 		}
 	}
 
@@ -243,6 +261,11 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 		case 5:
 			tex = movingTexture;
 			currentFrame = parry[direction];
+			break;
+		case 6:
+			tex = movingTexture;
+			currentFrame = stance[direction];
+			projectile.setRect(heal[order]);
 			break;
 	}
 
@@ -295,7 +318,7 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 
 						}
 						else if (current == 2) {
-
+							healLeft++;
 							if (kimonobird* p_enemy = dynamic_cast<kimonobird*>(enemies[index]))
 							{
 								p_enemy->dying();
@@ -342,6 +365,10 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 			case 5:
 				timeLeft--;
 				if (timeLeft == 0) order = 0;
+				break;
+			case 6:
+				timeLeft--;
+				if (timeLeft == 0) order = 0, projectile.setPos({0, 0}), hp += 50, hp = min(hp, 250);
 				break;
 		}
 		lastUpdate = currentTime;

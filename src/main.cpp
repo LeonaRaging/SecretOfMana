@@ -158,6 +158,7 @@ int main(int argc, char* args[])
 				}
 
 				window.render_entity(p);
+				window.render_entity(p.projectile);
 
 				for (auto &e : maps[currentMap].enemies) {
 					if ((*e).getPos().y >= p.getPos().y)
@@ -196,6 +197,7 @@ int main(int argc, char* args[])
 				window.render_font(p.getHp(), vector2f(camera.x + 34 - getNumberLength(p.getHp()) * 8, camera.y + SCREEN_HEIGHT - 20), 1);
 				window.render_font(-1, vector2f(camera.x + 34, camera.y + SCREEN_HEIGHT - 20), 1);
 				window.render_font(250, vector2f(camera.x + 42, camera.y + SCREEN_HEIGHT - 20), 1);
+				window.render_font(p.healLeft, vector2f(camera.x + SCREEN_WIDTH - 20, camera.y + SCREEN_HEIGHT - 20), 1);
 			}
 
 
@@ -211,7 +213,7 @@ int main(int argc, char* args[])
 
 		Perf = SDL_GetPerformanceFrequency();
 		float elapsedMS = (End - Start) / Perf * 1000.0f;
-		cout << elapsedMS << endl;
+		// cout << elapsedMS << endl;
 		if (elapsedMS < 16.666f) SDL_Delay(floor(16.666f - elapsedMS));
 	}
 

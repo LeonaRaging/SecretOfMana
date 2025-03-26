@@ -5,6 +5,8 @@ MSV: 24020142
 
 Họ và tên: Trương Quang Hoành
 
+Ngưỡng điểm mong muốn: 9-10
+
 A clone of Secret Of Mana using the SDL2 library, written in C++. Secret Of Mana is an action-rpg game, where you control the hero to defeat monsters.
 
 # 0. How to download
@@ -38,6 +40,12 @@ Player can parry by pressing the K key. While parrying, the player is invulnerab
 You are given 250 HP at the start of the game. Getting hit by enemies's attacks will cause your character to lose health.
 
 ![alt text](https://github.com/user-attachments/assets/ab9837ce-cf35-4825-b6a4-3212ec6ba692)
+
+### Heal
+You can heal by pressing F. Killing enemies increases your number of heals.
+
+![image](https://github.com/user-attachments/assets/352cfdae-e86a-4079-b842-ee6f608e304b)
+
 
 ### Hurt
 When getting hit by enemies's attacks, you will be knocked back and invulnerable for a few seconds.

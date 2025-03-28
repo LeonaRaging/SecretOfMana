@@ -120,7 +120,10 @@ Boss of the game.
 #### Blocking
 ![image](https://github.com/user-attachments/assets/f547546f-b377-4afa-8de5-c6beecce4895)
 
-## 2.c Map
+## 2.c Scoring
+Player have 5000 score in the beginning displays at the top-right of the screen. Score will decrease upon time. Kill an enemy increase your score.
+
+## 2.d Map
 The game consists of 6 maps, with tunnels connecting each other. Red boxes indicate location of enemies. When the player defeat the boss, the games will ends and you will be brought back to the title screen.
 
 ![Image](https://github.com/user-attachments/assets/8d1f2b52-07cb-4295-99d4-377ca3debc4e)

@@ -189,6 +189,7 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 						state = 4;
 						direction = 2;
 						timeLeft = 40;
+						score = scoreRate = 0;
 						break;
 					}
 
@@ -274,7 +275,7 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 	if (currentTime - lastUpdate > 100)
 	{
 		order++;
-		
+		score -= scoreRate;	
 		switch (state) {
 			case 0:
 				order %= 6;
@@ -322,21 +323,25 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 							if (kimonobird* p_enemy = dynamic_cast<kimonobird*>(enemies[index]))
 							{
 								p_enemy->dying();
+								score += 250;
 							}
 
 							if (pebbler* p_enemy = dynamic_cast<pebbler*>(enemies[index]))
 							{
 								p_enemy->dying();
+								score += 150;
 							}
 
 							if (waterthug* p_enemy = dynamic_cast<waterthug*>(enemies[index]))
 							{
 								p_enemy->dying();
+								score += 150;
 							}
 
 							if (mantisant* p_enemy = dynamic_cast<mantisant*>(enemies[index]))
 							{
 								p_enemy->dying();
+								scoreRate = 0;
 							}
 						}
 					}
@@ -356,10 +361,7 @@ void player::update(vector<entity>& wall, vector<enemy*> &enemies, float current
 				if (timeLeft == 0) 
 				{
 					isFading = 1;		
-					gameStart = false;
-					Mix_VolumeMusic(64);
-					Mix_Volume(-1, 64);
-					Mix_PlayMusic(music.titlescreen, -1);
+					gameStart = 2;
 				}
 				break;
 			case 5:

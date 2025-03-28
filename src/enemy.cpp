@@ -758,9 +758,7 @@ void mantisant::update(SDL_Rect p_rect, vector<entity> &wall, float currentTime)
 				if (timeLeft == 0) 
 				{
 					isFading = 1;		
-					gameStart = false;
-					Mix_VolumeMusic(128);
-					Mix_PlayMusic(music.titlescreen, -1);
+					gameStart = 3;
 				}
 				break;
 		}

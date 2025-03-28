@@ -24,7 +24,7 @@ int main(int argc, char* args[])
 	init();
 
 	bool gameRunning = true, pause = false;
-	gameStart = false; isFading = alpha = 0;
+	gameStart = 0; isFading = alpha = 0;
 	SDL_Event event;
 	player p;
 	map maps[7];
@@ -39,7 +39,8 @@ int main(int argc, char* args[])
 		maps[4] = dragon_cave_4();
 		maps[5] = dragon_cave_5();
 		maps[6] = boss_arena();
-		currentMap = 1;
+		currentMap = 1; 
+		score = 5000; scoreRate = 1;
 	};
 
 	while (gameRunning) 
@@ -70,9 +71,18 @@ int main(int argc, char* args[])
 				}
 			}
 
-			else if (gameStart == false && event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RETURN)
+			else if ((gameStart > 1) && event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RETURN)
 			{
-				gameStart = true;
+				gameStart = 0;
+				isFading = 1;
+				Mix_VolumeMusic(64);
+				Mix_Volume(-1, 64);
+				Mix_PlayMusic(music.titlescreen, -1);
+			}
+
+			else if (gameStart == 0 && event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RETURN)
+			{
+				gameStart = 1;
 				isFading = 1;
 				Mix_PlayMusic(music.ingame, -1);
 				resetGame();
@@ -85,7 +95,7 @@ int main(int argc, char* args[])
 
 		float Perf = SDL_GetPerformanceFrequency();
 		float currentTime = SDL_GetPerformanceCounter() / Perf * 1000.f;
-		if (gameStart) {
+		if (gameStart == 1) {
 			int nxt = maps[currentMap].checkPortals(p, currentTime);
 			if (currentMap != 6 && nxt == 6) Mix_PlayMusic(music.bosstheme, -1);
 			currentMap = nxt;
@@ -99,7 +109,7 @@ int main(int argc, char* args[])
 		{
 			window.init();
 
-			if (!gameStart)
+			if (gameStart == 0)
 			{
 				camera.x = camera.y = 0;
 				SDL_Texture* title = window.loadTexture("res/image/miscellaneous/title.png");
@@ -107,8 +117,25 @@ int main(int argc, char* args[])
 				window.render_map(p_entity);
 			}
 
+			else if (gameStart == 2) 
+			{
+				camera.x = camera.y = 0;
+				SDL_Texture* gameover = window.loadTexture("res/image/miscellaneous/gameover.png");
+				entity p_entity(vector2f(0, 0), gameover, 0, 0, 256, 191);
+				window.render_map(p_entity);
+			}
+
+			else if (gameStart == 3) 
+			{
+				camera.x = camera.y = 0;
+				SDL_Texture* ending = window.loadTexture("res/image/miscellaneous/ending.png");
+				entity p_entity(vector2f(0, 0), ending, 0, 0, 256, 191);
+				window.render_map(p_entity);
+			}
+
 			else
 			{
+				
 
 				for (enemy *e : maps[currentMap].enemies) {
 					if (kimonobird* p_enemy = dynamic_cast<kimonobird*>(e))
@@ -181,7 +208,6 @@ int main(int argc, char* args[])
 						if (number[index].timeLeft >= 5) number[index].pos.y += 2;
 						else number[index].pos.y -= 1;
 
-						
 						number[index].lastUpdate = currentTime;
 						
 						if (number[index].timeLeft == 0)
@@ -198,6 +224,7 @@ int main(int argc, char* args[])
 				window.render_font(-1, vector2f(camera.x + 34, camera.y + SCREEN_HEIGHT - 20), 1);
 				window.render_font(250, vector2f(camera.x + 42, camera.y + SCREEN_HEIGHT - 20), 1);
 				window.render_font(p.healLeft, vector2f(camera.x + SCREEN_WIDTH - 20, camera.y + SCREEN_HEIGHT - 20), 1);
+				window.render_font(score, vector2f(camera.x + SCREEN_WIDTH - 40, camera.y + 5), 1);
 			}
 
 

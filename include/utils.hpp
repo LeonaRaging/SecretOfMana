@@ -80,8 +80,7 @@ inline pair<int,int> RelativePostion(SDL_Rect a, SDL_Rect b)
 
 inline mt19937 mt(chrono::steady_clock::now().time_since_epoch().count());
 inline SDL_Rect camera;
-inline int isFading, alpha;
-inline bool gameStart;
+inline int isFading, alpha, score, scoreRate, gameStart;
 inline vector<numberDisplay> number;
 
 int Reverse(int direction);
